@@ -10,7 +10,7 @@ UserType = Literal["FREELANCER", "RECRUITER"]
 # --------------------------
 
 class User(BaseModel):
-    userId: int
+    userId: int = -1
     username: str
     email: str
     password: str

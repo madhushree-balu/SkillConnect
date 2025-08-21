@@ -63,7 +63,7 @@ class UserHandler:
             return user
 
 
-    def get_user(self, user_id: str) -> models.User:
+    def get_user(self, user_id: int) -> models.User:
         with DB() as cursor:
             cursor.execute(
                 "SELECT * FROM users WHERE userId = ?",
@@ -91,7 +91,7 @@ class UserHandler:
             cursor.commit()
             return user
 
-    def delete_user(self, user_id: str) -> models.User | None:
+    def delete_user(self, user_id: int) -> models.User | None:
         with DB() as cursor:
             cursor.execute(
                 "DELETE FROM users WHERE userId = ?",
@@ -101,7 +101,7 @@ class UserHandler:
             return self.get_user(user_id)
 
 
-    def match_password(self, user_id: str, password: str) -> bool:
+    def match_password(self, user_id: int, password: str) -> bool:
         with DB() as cursor:
             cursor.execute(
                 "SELECT password FROM users WHERE userId = ?",
@@ -115,7 +115,7 @@ class UserHandler:
             return utils.hash_password(password) == row[0]
         
 
-    def get_user_type(self, user_id: str) -> models.UserType:
+    def get_user_type(self, user_id: int) -> models.UserType:
         with DB() as cursor:
             cursor.execute(
                 "SELECT user_type FROM users WHERE userId = ?",
@@ -144,7 +144,7 @@ class UserHandler:
     # --------------------------
     # Freelancer Profile Handler
     # --------------------------
-    def get_freelancer_profile(self, user_id: str) -> models.FreelancerProfile | None:
+    def get_freelancer_profile(self, user_id: int) -> models.FreelancerProfile | None:
         with DB() as cursor:
             cursor.execute(
                 "SELECT * FROM freelancer_profiles WHERE userId = ?",
@@ -164,7 +164,7 @@ class UserHandler:
                 skills=row[5]
             )
 
-    def update_freelancer_profile(self, user_id: str, profile: models.FreelancerProfile) -> models.FreelancerProfile:
+    def update_freelancer_profile(self, user_id: int, profile: models.FreelancerProfile) -> models.FreelancerProfile:
         with DB() as cursor:
             cursor.execute(
                 "UPDATE freelancer_profiles SET firstName = ?, lastName = ?, education = ?, experience = ?, skills = ? WHERE userId = ?",
@@ -173,7 +173,7 @@ class UserHandler:
             cursor.commit()
             return profile
 
-    def delete_freelancer_profile(self, user_id: str) -> models.FreelancerProfile:
+    def delete_freelancer_profile(self, user_id: int) -> models.FreelancerProfile:
         with DB() as cursor:
             cursor.execute(
                 "DELETE FROM freelancer_profiles WHERE userId = ?",
@@ -186,20 +186,20 @@ class UserHandler:
     # --------------------------
     # User Skill Handler
     # --------------------------
-    def get_skills(self, user_id: str) -> List[models.Skill]:
+    def get_skills(self, user_id: int) -> List[models.Skill]:
         return UserSkillHandler().get_user_skills(user_id)
 
-    def add_skill(self, user_id: str, skill: str) -> models.Skill:
+    def add_skill(self, user_id: int, skill: str) -> models.Skill:
         return UserSkillHandler().add_user_skill(user_id, skill)
 
-    def remove_skill(self, user_id: str, skill_id: int) -> models.Skill:
+    def remove_skill(self, user_id: int, skill_id: int) -> models.Skill:
         return UserSkillHandler().remove_user_skill(user_id, skill_id)
 
     
     # --------------------------
     # User Experience Handler
     # --------------------------
-    def get_experiences(self, user_id: str) -> List[models.Experience] | None:
+    def get_experiences(self, user_id: int) -> List[models.Experience] | None:
         with DB() as cursor:
             cursor.execute(
                 "SELECT * FROM experiences WHERE userId = ?",
@@ -209,7 +209,7 @@ class UserHandler:
 
             return [models.Experience(experienceId=row[0], company=row[1], position=row[2], startDate=row[3], endDate=row[4], description=row[5]) for row in rows]
 
-    def add_experience(self, user_id: str, experience: models.Experience) -> models.Experience:
+    def add_experience(self, user_id: int, experience: models.Experience) -> models.Experience:
         with DB() as cursor:
             cursor.execute(
                 "INSERT INTO experiences (userId, company, position, startDate, endDate, description) VALUES (?, ?, ?, ?, ?, ?)",
@@ -218,7 +218,7 @@ class UserHandler:
             cursor.commit()
             return experience
 
-    def remove_experience(self, user_id: str, experience_id: int) -> models.Experience:
+    def remove_experience(self, user_id: int, experience_id: int) -> models.Experience:
         with DB() as cursor:
             cursor.execute(
                 "DELETE FROM experiences WHERE userId = ? AND experienceId = ?",
@@ -231,7 +231,7 @@ class UserHandler:
     # --------------------------
     # User Education Handler
     # --------------------------
-    def get_educations(self, user_id: str) -> List[models.Education] | None:
+    def get_educations(self, user_id: int) -> List[models.Education] | None:
         with DB() as cursor:
             cursor.execute(
                 "SELECT * FROM educations WHERE userId = ?",
@@ -241,7 +241,7 @@ class UserHandler:
 
             return [models.Education(educationId=row[0], school=row[1], degree=row[2], fieldOfStudy=row[3], startDate=row[4], endDate=row[5], cgpa=row[6]) for row in rows]
     
-    def add_education(self, user_id: str, education: models.Education) -> models.Education:
+    def add_education(self, user_id: int, education: models.Education) -> models.Education:
         with DB() as cursor:
             cursor.execute(
                 "INSERT INTO educations (userId, school, degree, fieldOfStudy, startDate, endDate, cgpa) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -250,7 +250,7 @@ class UserHandler:
             cursor.commit()
             return education
 
-    def remove_education(self, user_id: str, education_id: int) -> models.Education:
+    def remove_education(self, user_id: int, education_id: int) -> models.Education:
         with DB() as cursor:
             cursor.execute(
                 "DELETE FROM educations WHERE userId = ? AND educationId = ?",
@@ -318,7 +318,7 @@ class SkillHandler:
 
 
 class UserSkillHandler:
-    def get_user_skills(self, user_id: str) -> List[models.UserSkill]:
+    def get_user_skills(self, user_id: int) -> List[models.UserSkill]:
         with DB() as cursor:
             cursor.execute(
                 "SELECT * FROM user_skills WHERE userId = ?",
@@ -328,7 +328,7 @@ class UserSkillHandler:
 
             return [models.UserSkill(userId=row[0], skillId=row[1]) for row in rows]
     
-    def add_user_skill(self, user_id: str, skill: str) -> models.UserSkill:
+    def add_user_skill(self, user_id: int, skill: str) -> models.UserSkill:
         with DB() as cursor:
             skill_id = SkillHandler().get_skill_id(skill)
             cursor.execute(
@@ -338,7 +338,7 @@ class UserSkillHandler:
             cursor.commit()
             return models.UserSkill(userId=user_id, skillId=skill_id)
     
-    def remove_user_skill(self, user_id: str, skill_id: int) -> models.UserSkill:
+    def remove_user_skill(self, user_id: int, skill_id: int) -> models.UserSkill:
         with DB() as cursor:
             cursor.execute(
                 "DELETE FROM user_skills WHERE userId = ? AND skillId = ?",
@@ -347,7 +347,7 @@ class UserSkillHandler:
             cursor.commit()
             return models.UserSkill(userId=user_id, skillId=skill_id)
 
-    def remove_user_skills(self, user_id: str) -> None:
+    def remove_user_skills(self, user_id: int) -> None:
         with DB() as cursor:
             cursor.execute(
                 "DELETE FROM user_skills WHERE userId = ?",
