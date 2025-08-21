@@ -1,3 +1,4 @@
+from typing import List
 import sqlite3
 from . import models
 from . import utils
