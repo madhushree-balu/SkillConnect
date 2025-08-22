@@ -53,12 +53,17 @@ def signup_post():
     username = form.get('username')
     email = form.get('email')
     password = form.get('password')
+    userType = form.get('userType')
+
+    if userType not in ['freelancer', 'recruiter']:
+        flash('Invalid user type', 'error')
+        return redirect(url_for('auth.signup'))
 
     user = models.User(
         username=username,
         email=email,
         password=password,
-        userType=models.UserType.FREELANCER
+        userType=models.UserType.FREELANCER if userType == 'freelancer' else models.UserType.RECRUITER
     )
 
     if userHandler.get_user_id(email=email) is not None:
@@ -72,7 +77,6 @@ def signup_post():
     user = userHandler.create_user(user)
 
     sessionId = utils.hash_password(str(user.userId) + str(request.remote_addr))
-
     sessionHandler.create_session(
         models.Session(userId=user.userId, sessionId=sessionId)
     )

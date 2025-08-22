@@ -4,6 +4,14 @@ from . import models
 from . import utils
 
 
+create_table_commands = [
+
+
+    
+
+]
+
+
 class DB:
     def __init__(self, db_file):
         self.db_file = db_file
