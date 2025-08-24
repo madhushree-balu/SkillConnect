@@ -4,12 +4,79 @@ from . import models
 from . import utils
 
 
-create_table_commands = [
+create_table_commands = """
+-- Core User & Session Tables
+CREATE TABLE IF NOT EXISTS users (
+    userId INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    userType TEXT NOT NULL CHECK (userType IN ('FREELANCER', 'RECRUITER'))
+);
 
+CREATE TABLE IF NOT EXISTS sessions (
+    sessionId TEXT PRIMARY KEY,
+    userId INTEGER NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
+);
 
-    
+-- Freelancer Profile Table
+CREATE TABLE IF NOT EXISTS freelancer_profiles (
+    userId INTEGER PRIMARY KEY,
+    firstName TEXT NOT NULL,
+    lastName TEXT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
+);
 
-]
+-- Education Table
+CREATE TABLE IF NOT EXISTS education (
+    educationId INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER NOT NULL,
+    school TEXT NOT NULL,
+    degree TEXT NOT NULL,
+    fieldOfStudy TEXT NOT NULL,
+    startDate TEXT NOT NULL,
+    endDate TEXT,
+    cgpa REAL,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
+);
+
+-- Experience Table
+CREATE TABLE IF NOT EXISTS experience (
+    experienceId INTEGER PRIMARY KEY AUTOINCREMENT,
+    userId INTEGER NOT NULL,
+    company TEXT NOT NULL,
+    position TEXT NOT NULL,
+    startDate TEXT NOT NULL,
+    endDate TEXT,
+    description TEXT,
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
+);
+
+-- Skills Table
+CREATE TABLE IF NOT EXISTS skills (
+    skillId INTEGER PRIMARY KEY AUTOINCREMENT,
+    skill TEXT NOT NULL UNIQUE
+);
+
+-- User Skills Junction Table
+CREATE TABLE IF NOT EXISTS user_skills (
+    userId INTEGER NOT NULL,
+    skillId INTEGER NOT NULL,
+    PRIMARY KEY (userId, skillId),
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE,
+    FOREIGN KEY (skillId) REFERENCES skills(skillId) ON DELETE CASCADE
+);
+
+-- Indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions(userId);
+CREATE INDEX IF NOT EXISTS idx_education_userId ON education(userId);
+CREATE INDEX IF NOT EXISTS idx_experience_userId ON experience(userId);
+CREATE INDEX IF NOT EXISTS idx_user_skills_userId ON user_skills(userId);
+CREATE INDEX IF NOT EXISTS idx_user_skills_skillId ON user_skills(skillId);
+"""
 
 
 class DB:
