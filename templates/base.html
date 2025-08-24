@@ -10,7 +10,7 @@
         <h1>SkillConnect</h1>
         <ul>
             {% if "username" in session %}
-            <li><span>{{ session['username'] }}</span>
+            <li><a href="{{ url_for('profile') }}">{{ session['username'] }}</a>
             <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
                 {% else %}
             <li><a href="{{ url_for('auth.signup') }}">Signin</a>

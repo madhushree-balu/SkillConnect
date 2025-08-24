@@ -40,5 +40,97 @@
 
     </section>
 
+    <section id="educations">
+        <div class="top">
+            <h1>Education</h1>
+            <button id="addEducation">+ Add</button>
+        </div>
 
+        <div class="container">
+            {%  for education in educations %}
+            <div class="educationField" educationId="{{ education.educationId }}">
+                <div class="removeBtn">
+                    <button class="removeEducation" educationId="{{ education.educationId }}">Remove</button>
+                </div>
+                <div class="container">
+                    <div class="degreeMark">
+                        <input type="text" class="school" value="{{ education.school }}" placeholder="School" />
+                        <input type="text" class="degree" value="{{ education.degree }}" placeholder="Degree" />
+                        <input type="text" class="fieldOfStudy" value="{{ education.fieldOfStudy }}" placeholder="Field Of Study" />
+                    </div>
+                    <div class="dates">
+                        <input type="date" name="startDate" class="startDate" value="{{ education.startDate }}" />
+                        <input type="date" name="endDate" class="endDate" value="{{ education.endDate }}" />
+                    </div>
+                    <input type="number" name="cgpa" class="cgpa" value="{{ education.cgpa }}" placeholder="CGPA" />
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+            
+        </section>
+        
+        <section id="experiences">
+        <div class="top">
+            <h1>Experiences</h1>
+            <button id="addExperience">+ Add</button>
+        </div>
+
+        <div class="container">
+            {% for experience in experiences %}
+                <div class="experienceField" experienceId="{{ experience.experienceId }}">
+                    <div class="removeBtn">
+                        <button class="removeExperience" experienceId="{{ experience.experienceId }}">Remove</button>
+                    </div>
+                    <div class="container">
+                        <div class="companyRole">
+                            <input type="text" class="company" value="{{ experience.company }}" placeholder="Company" />
+                            <input type="text" class="position" value="{{ experience.position }}" placeholder="Position" />
+                        </div>
+                        <div class="dates">
+                            <input type="date" name="startDate" class="startDate" value="{{ experience.startDate }}" />
+                            <input type="date" name="endDate" class="endDate" value="{{ experience.endDate }}" />
+                        </div>
+                        <textarea name="description" class="description">
+                            "{{ experience.description }}"
+                        </textarea>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="skills">
+        <div class="top">
+            <h1>Skill</h1>
+            <div>
+                <input type="text" name="newSkill" id="newSkill">
+                <button id="addSkill" onclick="addSkill()">+ Add</button>
+            </div>
+        </div>
+        
+        <div class="container">
+            {% for skill in skills %}
+                <div class="skillField" skillId="{{ skill.skillId }}">
+                    <span>{{ skill.skill }}</span>
+                    <div class="skillRemove">
+                        <button class="removeSkill" skillId="{{ skill.skillId }}" onclick="removeSkill(this)">X</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </section>
+
+    <section id="options">
+        <a href="" target="_self">Reset</a>
+        <button id="saveAll">Save</button>
+    </section>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='profile.js') }}"></script>
 {% endblock %}
