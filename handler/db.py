@@ -20,11 +20,16 @@ CREATE TABLE IF NOT EXISTS sessions (
     FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
--- Freelancer Profile Table
-CREATE TABLE IF NOT EXISTS freelancer_profiles (
+CREATE TABLE IF NOT EXISTS user_profiles (
     userId INTEGER PRIMARY KEY,
     firstName TEXT NOT NULL,
+    middleName TEXT,
     lastName TEXT NOT NULL,
+    summary TEXT DEFAULT '',
+    phoneNumber TEXT DEFAULT '',
+    address TEXT DEFAULT '',
+    personalWebsite TEXT DEFAULT '',
+    contactEmail TEXT DEFAULT '',
     FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
@@ -143,7 +148,7 @@ class UserHandler:
             try:
                 cursor.execute(
                     "INSERT INTO users (username, email, password, user_type) VALUES (?, ?, ?, ?)",
-                    (user.username, user.email, user.password, user.userType)
+                    (user.username, user.email, user.password, user.userType.value)
                 )
                 newUserId = cursor.lastrowid
                 connection.commit()
@@ -211,6 +216,7 @@ class UserHandler:
             return cursor.rowcount > 0
 
     def match_password(self, userId: int, password: str) -> bool:
+        print(userId, password)
         with DB() as connection:
             if not connection:
                 return False
@@ -259,83 +265,54 @@ class UserHandler:
             if row is None:
                 return None
             return row[0]
-
-    # --------------------------
-    # Freelancer Profile Handler
-    # --------------------------
-    def create_freelancer_profile(self, profile: models.FreelancerProfile) -> models.FreelancerProfile | None:
+        
+    # -----------
+    # User Profile
+    # -----------
+    def create_user_profile(self, profile: models.UserProfile) -> models.UserProfile | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             try:
                 cursor.execute(
-                    "INSERT INTO freelancer_profiles (userId, firstName, lastName) VALUES (?, ?, ?)",
-                    (profile.userId, profile.firstName, profile.lastName)
+                    "INSERT INTO user_profiles (userId, firstName, middleName, lastName, summary, phoneNumber, address, personalWebsite, contactEmail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (profile.userId, profile.firstName, profile.middleName, profile.lastName, profile.summary, profile.phoneNumber, profile.address, profile.personalWebsite, profile.contactEmail)
                 )
                 connection.commit()
                 return profile
             except sqlite3.IntegrityError:
                 return None
 
-    def get_freelancer_profile(self, userId: int) -> models.FreelancerProfile | None:
+    def get_user_profile(self, userId: int) -> models.UserProfile | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
-            cursor.execute(
-                "SELECT * FROM freelancer_profiles WHERE userId = ?",
-                (userId,)
-            )
+            cursor.execute("SELECT * FROM user_profiles WHERE userId = ?", (userId,))
             row = cursor.fetchone()
-
             if row is None:
                 return None
-
-            # Get related data
-            education = self.get_educations(userId) or []
-            experience = self.get_experiences(userId) or []
-            skills = self.get_user_skills_with_names(userId) or []
-
-            return models.FreelancerProfile(
-                userId=row[0],
-                firstName=row[1],
-                lastName=row[2],
-                education=education,
-                experience=experience,
-                skills=skills
+            
+            return models.UserProfile(
+                userId=row[0], firstName=row[1], middleName=row[2], 
+                lastName=row[3], summary=row[4], phoneNumber=row[5],
+                address=row[6], personalWebsite=row[7], contactEmail=row[8]
             )
-
-    def update_freelancer_profile(self, profile: models.FreelancerProfile) -> models.FreelancerProfile | None:
+    def update_user_profile(self, profile: models.UserProfile) -> models.UserProfile | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             try:
                 cursor.execute(
-                    "UPDATE freelancer_profiles SET firstName = ?, lastName = ? WHERE userId = ?",
-                    (profile.firstName, profile.lastName, profile.userId)
+                    "UPDATE user_profiles SET firstName = ?, middleName = ?, lastName = ?, summary = ?, phoneNumber = ?, address = ?, personalWebsite = ?, contactEmail = ? WHERE userId = ?",
+                    (profile.firstName, profile.middleName, profile.lastName, profile.summary, profile.phoneNumber, profile.address, profile.personalWebsite, profile.contactEmail, profile.userId)
                 )
                 connection.commit()
                 return profile
             except sqlite3.IntegrityError:
                 return None
-
-    def delete_freelancer_profile(self, userId: int) -> bool:
-        profile = self.get_freelancer_profile(userId)
-        if profile is None:
-            return False
-            
-        with DB() as connection:
-            if not connection:
-                return False
-            cursor = connection.cursor()
-            cursor.execute(
-                "DELETE FROM freelancer_profiles WHERE userId = ?",
-                (userId,)
-            )
-            connection.commit()
-            return cursor.rowcount > 0
 
     # --------------------------
     # User Skill Handler

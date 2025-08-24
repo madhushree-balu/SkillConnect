@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+
+
+    <section id="profile">
+        <h1>Profile</h1>
+
+        <div class="nameField">
+            <input type="text" name="firstName" id="firstName" placeholder="First Name" value="{{ profile.firstName }}">
+            <input type="text" name="middleName" id="middleName" placeholder="Middle Name" value="{{ profile.middleName }}">
+            <input type="text" name="lastName" id="lastName" placeholder="Last Name" value="{{ profile.lastName }}">
+        </div>
+
+        <div class="inputField">
+            <label for="summary">Summary</label>
+            <textarea name="summary" id="summary">{{ profile.summary }}</textarea>
+        </div>
+
+        <div class="inputField">
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" name="phoneNumber" id="phoneNumber" placeholder="Phone Number" value="{{ profile.phoneNumber }}">
+        </div>
+
+        <div class="inputField">
+            <label for="address">Address:</label>
+            <input type="text" name="address" id="address" placeholder="Address" value="{{ profile.address }}">
+        </div>
+
+        <div class="inputField">
+            <label for="personalWebsite">Personal Website:</label>
+            <input type="text" name="personalWebsite" id="personalWebsite" placeholder="Personal Website" value="{{ profile.personalWebsite }}">
+        </div>
+
+        <div class="inputField">
+            <label for="contactEmail">Contact Email</label>
+            <input type="text" name="contactEmail" id="contactEmail" placeholder="Contact Email" value="{{ profile.contactEmail }}">
+        </div>
+
+    </section>
+
+
+{% endblock %}

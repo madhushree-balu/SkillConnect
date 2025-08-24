@@ -19,15 +19,17 @@ def login():
 def login_post():
     form = request.form
 
-    username = form.get('username')
-    password = form.get('password')
+    username = form.get('username', "").lower()
+    password = form.get('password', "-")
 
-    user = userHandler.get_user(username=username if username else "")
+    user = userHandler.get_user(username=username)
 
     if user is None:
+        flash('Username not found!', 'error')
         return redirect(url_for('auth.login'))
 
-    if not userHandler.match_password(user.userId, password if password else "-"):
+    if not userHandler.match_password(user.userId, password):
+        flash('Incorrect password!', 'error')
         return redirect(url_for('auth.login'))
 
     sessionId = utils.hash_password(str(user.userId) + str(request.remote_addr))
@@ -36,6 +38,7 @@ def login_post():
         models.Session(userId=user.userId, sessionId=sessionId)
     )
     session['userId'] = user.userId
+    session['username'] = user.username
     session['sessionId'] = sessionId
 
     return redirect(url_for('index'))
@@ -72,9 +75,9 @@ def signup_post():
         return redirect(url_for('auth.signup'))
 
     user = models.User(
-        username=username,
-        email=email,
-        password=password,
+        username=username.strip().lower(),
+        email=email.strip(),
+        password= utils.hash_password(password)  ,
         userType=models.UserType(userType)
     )
 
@@ -97,6 +100,14 @@ def signup_post():
         models.Session(userId=user.userId, sessionId=sessionId)
     )
     session['userId'] = user.userId
+    session['username'] = user.username
     session['sessionId'] = sessionId
 
+    return redirect(url_for('auth.login'))
+
+
+@auth.get('/logout')
+def logout():
+    sessionHandler.delete_session(session['sessionId'])
+    session.clear()
     return redirect(url_for('auth.login'))

@@ -4,8 +4,8 @@ from enum import Enum
 
 # User Type Enum
 class UserType(Enum):
-    FREELANCER = "freelancer"
-    EMPLOYER = "employer"
+    FREELANCER = "FREELANCER"
+    EMPLOYER = "RECRUITER"
 
 # --------------------------
 # Core User & Session Models
@@ -17,6 +17,18 @@ class User(BaseModel):
     email: str = Field(..., description="Unique email address")
     password: str = Field(..., min_length=1, description="Hashed password")
     userType: UserType
+
+
+class UserProfile(BaseModel):
+    userId: int = Field(..., description="User ID")
+    firstName: str = ""
+    middleName: str = ""
+    lastName: str = ""
+    summary: str = ""
+    phoneNumber: str = ""
+    address: str = ""
+    personalWebsite: str = ""
+    contactEmail: str = ""
 
 
 class Session(BaseModel):
@@ -61,19 +73,6 @@ class Experience(BaseModel):
     startDate: str = Field(..., description="Start date (YYYY-MM-DD format)")
     endDate: Optional[str] = Field(default=None, description="End date (YYYY-MM-DD format, null if current)")
     description: Optional[str] = Field(default=None, description="Job description")
-
-
-# --------------------------
-# Freelancer Models
-# --------------------------
-
-class FreelancerProfile(BaseModel):
-    userId: int = Field(..., description="Associated user ID")
-    firstName: str = Field(..., min_length=1, description="First name")
-    lastName: str = Field(..., min_length=1, description="Last name")
-    education: List[Education] = Field(default_factory=list, description="List of education records")
-    experience: List[Experience] = Field(default_factory=list, description="List of experience records")
-    skills: List[Skill] = Field(default_factory=list, description="List of skills")
 
 
 # --------------------------

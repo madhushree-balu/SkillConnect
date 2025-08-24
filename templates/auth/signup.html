@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
     <form action="" method="post">
         <div>
             <label for="username">Username</label>
@@ -34,5 +30,4 @@
             <input type="submit" value="Sign Up">
         </div>
     </form>
-</body>
-</html>
+{% endblock %}
