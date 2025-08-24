@@ -1,9 +1,11 @@
 from pydantic import BaseModel, Field
 from typing import List, Literal, Optional
+from enum import Enum
 
 # User Type Enum
-UserType = Literal["FREELANCER", "RECRUITER"]
-
+class UserType(Enum):
+    FREELANCER = "freelancer"
+    EMPLOYER = "employer"
 
 # --------------------------
 # Core User & Session Models
@@ -14,7 +16,7 @@ class User(BaseModel):
     username: str = Field(..., min_length=1, description="Unique username")
     email: str = Field(..., description="Unique email address")
     password: str = Field(..., min_length=1, description="Hashed password")
-    userType: UserType = Field(..., description="Type of user")
+    userType: UserType
 
 
 class Session(BaseModel):

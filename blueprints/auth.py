@@ -22,12 +22,12 @@ def login_post():
     username = form.get('username')
     password = form.get('password')
 
-    user = userHandler.get_user(username=username)
+    user = userHandler.get_user(username=username if username else "")
 
     if user is None:
         return redirect(url_for('auth.login'))
 
-    if not userHandler.match_password(user.userId, password):
+    if not userHandler.match_password(user.userId, password if password else "-"):
         return redirect(url_for('auth.login'))
 
     sessionId = utils.hash_password(str(user.userId) + str(request.remote_addr))
@@ -54,8 +54,20 @@ def signup_post():
     email = form.get('email')
     password = form.get('password')
     userType = form.get('userType')
+    
+    if username is None or username == "":
+        flash('Username is required', 'error')
+        return redirect(url_for('auth.signup'))
 
-    if userType not in ['freelancer', 'recruiter']:
+    if email is None or email == "":
+        flash('Email is required', 'error')
+        return redirect(url_for('auth.signup'))
+
+    if password is None or password == "":
+        flash('Password is required', 'error')
+        return redirect(url_for('auth.signup'))
+
+    if userType not in [ut.value for ut in models.UserType]:
         flash('Invalid user type', 'error')
         return redirect(url_for('auth.signup'))
 
@@ -63,7 +75,7 @@ def signup_post():
         username=username,
         email=email,
         password=password,
-        userType=models.UserType.FREELANCER if userType == 'freelancer' else models.UserType.RECRUITER
+        userType=models.UserType(userType)
     )
 
     if userHandler.get_user_id(email=email) is not None:
@@ -75,6 +87,10 @@ def signup_post():
         return redirect(url_for('auth.signup'))
 
     user = userHandler.create_user(user)
+    
+    if not user:
+        flash('Failed to create user', 'error')
+        return redirect(url_for('auth.signup'))
 
     sessionId = utils.hash_password(str(user.userId) + str(request.remote_addr))
     sessionHandler.create_session(

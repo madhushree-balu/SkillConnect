@@ -156,14 +156,15 @@ class UserHandler:
             except sqlite3.IntegrityError:
                 return None
 
-    def get_user(self, user_id: int) -> models.User | None:
+    def get_user(self, userId: int = -1, username: str = "") -> models.User | None:
+        
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
-                "SELECT * FROM users WHERE userId = ?",
-                (user_id,)
+                "SELECT * FROM users WHERE userId = ? or username = ?",
+                (userId,username)
             )
             row = cursor.fetchone()
 
@@ -193,8 +194,8 @@ class UserHandler:
             except sqlite3.IntegrityError:
                 return None
 
-    def delete_user(self, user_id: int) -> bool:
-        user = self.get_user(user_id)
+    def delete_user(self, userId: int) -> bool:
+        user = self.get_user(userId)
         if user is None:
             return False
             
@@ -204,19 +205,19 @@ class UserHandler:
             cursor = connection.cursor()
             cursor.execute(
                 "DELETE FROM users WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             connection.commit()
             return cursor.rowcount > 0
 
-    def match_password(self, user_id: int, password: str) -> bool:
+    def match_password(self, userId: int, password: str) -> bool:
         with DB() as connection:
             if not connection:
                 return False
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT password FROM users WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             row = cursor.fetchone()
 
@@ -225,14 +226,14 @@ class UserHandler:
 
             return utils.hash_password(password) == row[0]
         
-    def get_user_type(self, user_id: int) -> models.UserType | None:
+    def get_user_type(self, userId: int) -> models.UserType | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT user_type FROM users WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             row = cursor.fetchone()
 
@@ -277,14 +278,14 @@ class UserHandler:
             except sqlite3.IntegrityError:
                 return None
 
-    def get_freelancer_profile(self, user_id: int) -> models.FreelancerProfile | None:
+    def get_freelancer_profile(self, userId: int) -> models.FreelancerProfile | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT * FROM freelancer_profiles WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             row = cursor.fetchone()
 
@@ -292,9 +293,9 @@ class UserHandler:
                 return None
 
             # Get related data
-            education = self.get_educations(user_id) or []
-            experience = self.get_experiences(user_id) or []
-            skills = self.get_user_skills_with_names(user_id) or []
+            education = self.get_educations(userId) or []
+            experience = self.get_experiences(userId) or []
+            skills = self.get_user_skills_with_names(userId) or []
 
             return models.FreelancerProfile(
                 userId=row[0],
@@ -320,8 +321,8 @@ class UserHandler:
             except sqlite3.IntegrityError:
                 return None
 
-    def delete_freelancer_profile(self, user_id: int) -> bool:
-        profile = self.get_freelancer_profile(user_id)
+    def delete_freelancer_profile(self, userId: int) -> bool:
+        profile = self.get_freelancer_profile(userId)
         if profile is None:
             return False
             
@@ -331,7 +332,7 @@ class UserHandler:
             cursor = connection.cursor()
             cursor.execute(
                 "DELETE FROM freelancer_profiles WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             connection.commit()
             return cursor.rowcount > 0
@@ -339,10 +340,10 @@ class UserHandler:
     # --------------------------
     # User Skill Handler
     # --------------------------
-    def get_skills(self, user_id: int) -> List[models.UserSkill] | None:
-        return UserSkillHandler().get_user_skills(user_id)
+    def get_skills(self, userId: int) -> List[models.UserSkill] | None:
+        return UserSkillHandler().get_user_skills(userId)
 
-    def get_user_skills_with_names(self, user_id: int) -> List[models.Skill] | None:
+    def get_user_skills_with_names(self, userId: int) -> List[models.Skill] | None:
         with DB() as connection:
             if not connection:
                 return None
@@ -352,28 +353,28 @@ class UserHandler:
                    FROM skills s 
                    JOIN user_skills us ON s.skillId = us.skillId 
                    WHERE us.userId = ?""",
-                (user_id,)
+                (userId,)
             )
             rows = cursor.fetchall()
             return [models.Skill(skillId=row[0], skill=row[1]) for row in rows]
 
-    def add_skill(self, user_id: int, skill: str) -> models.UserSkill | None:
-        return UserSkillHandler().add_user_skill(user_id, skill)
+    def add_skill(self, userId: int, skill: str) -> models.UserSkill | None:
+        return UserSkillHandler().add_user_skill(userId, skill)
 
-    def remove_skill(self, user_id: int, skill_id: int) -> bool:
-        return UserSkillHandler().remove_user_skill(user_id, skill_id)
+    def remove_skill(self, userId: int, skill_id: int) -> bool:
+        return UserSkillHandler().remove_user_skill(userId, skill_id)
     
     # --------------------------
     # User Experience Handler
     # --------------------------
-    def get_experiences(self, user_id: int) -> List[models.Experience] | None:
+    def get_experiences(self, userId: int) -> List[models.Experience] | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT * FROM experience WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             rows = cursor.fetchall()
             return [models.Experience(
@@ -386,7 +387,7 @@ class UserHandler:
                 description=row[6]
             ) for row in rows]
 
-    def add_experience(self, user_id: int, experience: models.Experience) -> models.Experience | None:
+    def add_experience(self, userId: int, experience: models.Experience) -> models.Experience | None:
         with DB() as connection:
             if not connection:
                 return None
@@ -394,27 +395,27 @@ class UserHandler:
             try:
                 cursor.execute(
                     "INSERT INTO experience (userId, company, position, startDate, endDate, description) VALUES (?, ?, ?, ?, ?, ?)",
-                    (user_id, experience.company, experience.position, experience.startDate, experience.endDate, experience.description)
+                    (userId, experience.company, experience.position, experience.startDate, experience.endDate, experience.description)
                 )
                 newExperienceId = cursor.lastrowid
                 connection.commit()
                 
                 if newExperienceId is not None:
                     experience.experienceId = newExperienceId
-                    experience.userId = user_id
+                    experience.userId = userId
                     
                 return experience
             except sqlite3.IntegrityError:
                 return None
 
-    def remove_experience(self, user_id: int, experience_id: int) -> bool:
+    def remove_experience(self, userId: int, experience_id: int) -> bool:
         with DB() as connection:
             if not connection:
                 return False
             cursor = connection.cursor()
             cursor.execute(
                 "DELETE FROM experience WHERE userId = ? AND experienceId = ?",
-                (user_id, experience_id)
+                (userId, experience_id)
             )
             connection.commit()
             return cursor.rowcount > 0
@@ -422,14 +423,14 @@ class UserHandler:
     # --------------------------
     # User Education Handler
     # --------------------------
-    def get_educations(self, user_id: int) -> List[models.Education] | None:
+    def get_educations(self, userId: int) -> List[models.Education] | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT * FROM education WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             rows = cursor.fetchall()
             return [models.Education(
@@ -443,7 +444,7 @@ class UserHandler:
                 cgpa=row[7]
             ) for row in rows]
     
-    def add_education(self, user_id: int, education: models.Education) -> models.Education | None:
+    def add_education(self, userId: int, education: models.Education) -> models.Education | None:
         with DB() as connection:
             if not connection:
                 return None
@@ -451,27 +452,27 @@ class UserHandler:
             try:
                 cursor.execute(
                     "INSERT INTO education (userId, school, degree, fieldOfStudy, startDate, endDate, cgpa) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    (user_id, education.school, education.degree, education.fieldOfStudy, education.startDate, education.endDate, education.cgpa)
+                    (userId, education.school, education.degree, education.fieldOfStudy, education.startDate, education.endDate, education.cgpa)
                 )
                 newEducationId = cursor.lastrowid
                 connection.commit()
                 
                 if newEducationId is not None:
                     education.educationId = newEducationId
-                    education.userId = user_id
+                    education.userId = userId
                     
                 return education
             except sqlite3.IntegrityError:
                 return None
 
-    def remove_education(self, user_id: int, education_id: int) -> bool:
+    def remove_education(self, userId: int, education_id: int) -> bool:
         with DB() as connection:
             if not connection:
                 return False
             cursor = connection.cursor()
             cursor.execute(
                 "DELETE FROM education WHERE userId = ? AND educationId = ?",
-                (user_id, education_id)
+                (userId, education_id)
             )
             connection.commit()
             return cursor.rowcount > 0
@@ -560,19 +561,19 @@ class SkillHandler:
 
 
 class UserSkillHandler:
-    def get_user_skills(self, user_id: int) -> List[models.UserSkill] | None:
+    def get_user_skills(self, userId: int) -> List[models.UserSkill] | None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
                 "SELECT * FROM user_skills WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             rows = cursor.fetchall()
             return [models.UserSkill(userId=row[0], skillId=row[1]) for row in rows]
     
-    def add_user_skill(self, user_id: int, skill: str) -> models.UserSkill | None:
+    def add_user_skill(self, userId: int, skill: str) -> models.UserSkill | None:
         skill_id = SkillHandler().get_skill_id(skill)
         if not skill_id:
             return None
@@ -584,33 +585,33 @@ class UserSkillHandler:
             try:
                 cursor.execute(
                     "INSERT INTO user_skills (userId, skillId) VALUES (?, ?)",
-                    (user_id, skill_id)
+                    (userId, skill_id)
                 )
                 connection.commit()
-                return models.UserSkill(userId=user_id, skillId=skill_id)
+                return models.UserSkill(userId=userId, skillId=skill_id)
             except sqlite3.IntegrityError:
                 return None
     
-    def remove_user_skill(self, user_id: int, skill_id: int) -> bool:
+    def remove_user_skill(self, userId: int, skill_id: int) -> bool:
         with DB() as connection:
             if not connection:
                 return False
             cursor = connection.cursor()
             cursor.execute(
                 "DELETE FROM user_skills WHERE userId = ? AND skillId = ?",
-                (user_id, skill_id)
+                (userId, skill_id)
             )
             connection.commit()
             return cursor.rowcount > 0
 
-    def remove_user_skills(self, user_id: int) -> None:
+    def remove_user_skills(self, userId: int) -> None:
         with DB() as connection:
             if not connection:
                 return None
             cursor = connection.cursor()
             cursor.execute(
                 "DELETE FROM user_skills WHERE userId = ?",
-                (user_id,)
+                (userId,)
             )
             connection.commit()
 
