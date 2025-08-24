@@ -5,6 +5,8 @@ from flask import (
 import re
 from handler import db, models, utils
 
+from blueprints import api, auth
+
 app = Flask(__name__)
 app.secret_key = "My Secret Key"
 
@@ -31,6 +33,10 @@ def index():
 @app.get("/profile")
 def profile():
     return render_template("profile.html")
+
+
+app.register_blueprint(api)
+app.register_blueprint(auth)
 
 
 if __name__ == "__main__":
