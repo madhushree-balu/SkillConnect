@@ -45,6 +45,7 @@ def before_request():
     if dbSession.userId != userId:
         session.clear()
         flash("Invalid Session!", "error")
+        
         return redirect(url_for("auth.login"))
 
 
@@ -56,6 +57,7 @@ def index():
 @app.get("/profile")
 def profile():
     userId = session.get("userId", None)
+    
     
     if userId is None:
         session.clear()

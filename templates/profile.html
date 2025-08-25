@@ -39,8 +39,11 @@
         <div class="inputField">
             <label for="contactEmail">Contact Email</label>
             <input type="text" name="contactEmail" id="contactEmail" placeholder="Contact Email" value="{{ profile.contactEmail }}">
-        </div>
+        </div>`
 
+        <div class="buttons">
+            <button class="savProfile">Save</button>
+        </div>
     </section>
 
     <section id="educations">
@@ -52,9 +55,6 @@
         <div class="container">
             {%  for education in educations %}
             <div class="educationField" educationId="{{ education.educationId }}">
-                <div class="removeBtn">
-                    <button class="removeEducation" educationId="{{ education.educationId }}">Remove</button>
-                </div>
                 <div class="container">
                     <div class="degreeMark">
                         <input type="text" class="school" value="{{ education.school }}" placeholder="School" />
@@ -66,6 +66,14 @@
                         <input type="date" name="endDate" class="endDate" value="{{ education.endDate }}" />
                     </div>
                     <input type="number" name="cgpa" class="cgpa" value="{{ education.cgpa }}" placeholder="CGPA" />
+                </div>
+                <div class="buttons">
+                    <div class="removeBtn">
+                        <button class="removeEducation" educationId="{{ education.educationId }}" onclick="removeEducation(this)">Remove</button>
+                    </div>
+                    <div class="saveButton">
+                        <button class="saveEducation" educationId="{{ education.educationId }}" onclick="saveEducation(this)">Save</button>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -82,9 +90,6 @@
         <div class="container">
             {% for experience in experiences %}
                 <div class="experienceField" experienceId="{{ experience.experienceId }}">
-                    <div class="removeBtn">
-                        <button class="removeExperience" experienceId="{{ experience.experienceId }}">Remove</button>
-                    </div>
                     <div class="container">
                         <div class="companyRole">
                             <input type="text" class="company" value="{{ experience.company }}" placeholder="Company" />
@@ -97,6 +102,14 @@
                         <textarea name="description" class="description">
                             "{{ experience.description }}"
                         </textarea>
+                    </div>
+                    <div class="buttons">
+                        <div class="removeBtn">
+                            <button class="removeExperience" experienceId="{{ experience.experienceId }}" onclick="removeExperience(this)">Remove</button>
+                        </div>
+                        <div class="saveButton">
+                            <button class="saveExperience" experienceId="{{ experience.experienceId }}" onclick="saveExperience(this)">Save</button>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -124,12 +137,6 @@
         </div>
 
     </section>
-
-    <section id="options">
-        <a href="" target="_self">Reset</a>
-        <button id="saveAll">Save</button>
-    </section>
-
 
 {% endblock %}
 

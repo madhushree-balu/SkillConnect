@@ -13,7 +13,43 @@ def index():
     return {
         "success": True
     }
+
+
+@api.post("/profile/modify")
+def modify_user_profile():
+    userId = session.get("userId")
     
+    if userId is None:
+        return {
+            "success": False,
+            "error": "User is not logged in!"
+        }
+    
+    data = request.get_json()
+    
+    userProfile = models.UserProfile(
+        userId=userId,
+        firstName=data.get("firstName"),
+        middleName=data.get("middleName"),
+        lastName=data.get("lastName"),
+        summary=data.get("summary"),
+        phoneNumber=data.get("phoneNumber"),
+        address=data.get("address"),
+        personalWebsite=data.get("personalWebsite"),
+        contactEmail=data.get("contactEmail")
+    )
+    
+    updatedUserProfile = db.UserHandler().update_user_profile(userProfile)
+    
+    if updatedUserProfile:
+        return {
+            "success": True
+        }
+    
+    return {
+        "success": False,
+        "error": "Could not update profile!"
+    }
     
 @api.post("/skills/add")
 def add_skill():
@@ -62,6 +98,13 @@ def remove_skill():
 def create_education():
 
     userId=session.get("userId")
+    
+    if not userId:
+        return {
+            "success": False,
+            "error": "User is not logged in!"
+        }
+    
     emptyEducation = models.Education(
         userId = userId,
     )
@@ -84,6 +127,12 @@ def modify_education():
     userId = session.get("userId")
     data = request.get_json()
 
+    if userId is None:
+        return {
+            "success": False,
+            "error": "User is not logged in!"
+        }
+
     updatedEducation = models.Education(
         educationId = data["educationId"],
         userId = userId,
@@ -95,13 +144,46 @@ def modify_education():
         cgpa = data["cgpa"]
     )
 
-    education = db
+    education = db.UserHandler().update_education(updatedEducation)
+    
+    if education:
+        return {
+            "success": True
+        }
+
+    return {
+        "success": False,
+        "error": "Could not update education!"
+    }
+
+
+@api.post("/education/remove")
+def remove_education():
+    form = request.get_json(force=True)
+    educationId = form.get("educationId")
+    
+    if educationId is None:
+        return {
+            "success": False,
+            "error": "Education ID is required"
+        }
+    
+    return {
+        "success": db.UserHandler().remove_education(session["userId"], educationId)
+    }
 
     
 @api.post("/experience/create")
 def create_experience():
 
     userId = session.get("userId")
+    
+    if userId is None:
+        return {
+            "success": False,
+            "error": "User is not logged in!"
+        }
+    
     emptyExperience = models.Experience(
         userId = userId
     )
@@ -117,4 +199,54 @@ def create_experience():
     return {
         "success": False,
         "error": "Could not create new experience!"
+    }
+
+
+@api.post("/experience/modify")
+def modify_experience():
+    userId = session.get("userId")
+    data = request.get_json()
+
+    if userId is None:
+        return {
+            "success": False,
+            "error": "User is not logged in!"
+        }
+
+    updatedExperience = models.Experience(
+        experienceId = data["experienceId"],
+        userId = userId,
+        company = data["company"],
+        position = data["position"],
+        startDate = data["startDate"],
+        endDate = data["endDate"],
+        description = data["description"]
+    )
+
+    experience = db.UserHandler().update_experience(updatedExperience)
+    
+    if experience:
+        return {
+            "success": True
+        }
+
+    return {
+        "success": False,
+        "error": "Could not update experience!"
+    }
+
+
+@api.post("/experience/remove")
+def remove_experience():
+    form = request.get_json(force=True)
+    experienceId = form.get("experienceId")
+    
+    if experienceId is None:
+        return {
+            "success": False,
+            "error": "Experience ID is required"
+        }
+    
+    return {
+        "success": db.UserHandler().remove_experience(session["userId"], experienceId)
     }

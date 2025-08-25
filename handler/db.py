@@ -396,6 +396,21 @@ class UserHandler:
             )
             connection.commit()
             return cursor.rowcount > 0
+        
+    def update_experience(self, experience: models.Experience) -> models.Experience | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE experience SET company = ?, position = ?, startDate = ?, endDate = ?, description = ? WHERE experienceId = ?",
+                    (experience.company, experience.position, experience.startDate, experience.endDate, experience.description, experience.experienceId)
+                )
+                connection.commit()
+                return experience
+            except sqlite3.IntegrityError:
+                return None
 
     # --------------------------
     # User Education Handler
@@ -453,6 +468,21 @@ class UserHandler:
             )
             connection.commit()
             return cursor.rowcount > 0
+    
+    def update_education(self, education: models.Education) -> models.Education | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE education SET school = ?, degree = ?, fieldOfStudy = ?, startDate = ?, endDate = ?, cgpa = ? WHERE educationId = ?",
+                    (education.school, education.degree, education.fieldOfStudy, education.startDate, education.endDate, education.cgpa, education.educationId)
+                )
+                connection.commit()
+                return education
+            except sqlite3.IntegrityError:
+                return None
 
 
 class SkillHandler:
