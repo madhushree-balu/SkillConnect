@@ -141,7 +141,7 @@ def modify_education():
         fieldOfStudy = data["fieldOfStudy"],
         startDate = data["startDate"],
         endDate = data["endDate"],
-        cgpa = data["cgpa"]
+        cgpa = float(data.get("cgpa", 0.0))
     )
 
     education = db.UserHandler().update_education(updatedEducation)

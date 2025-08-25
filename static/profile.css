@@ -1,0 +1,390 @@
+/* Base section styling */
+#profile, #educations, #experiences, #skills {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 40px;
+}
+
+/* Container styling for form fields */
+section > .container > div {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    flex-direction: column;
+    background: #fefefe;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #aaa;
+}
+
+/* Main page gap */
+#page {
+    gap: 60px;
+}
+
+/* Section header styling */
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 80%;
+    padding: 5px 5px;
+}
+
+.top h1 {
+    font-size: 30px;
+    font-weight: 800;
+    margin: 0;
+    color: #333;
+}
+
+/* Container for form sections */
+section > .container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Profile section specific styling */
+#profile {
+    background: #fefefe;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #aaa;
+    width: 80%;
+    margin: 0 auto;
+}
+
+#profile h1 {
+    font-size: 30px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+/* Name field styling */
+.nameField {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    width: 100%;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.nameField input {
+    flex: 1;
+    min-width: 200px;
+    border: 1px solid #b5b5b5;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.nameField input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Input field styling */
+.inputField {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.inputField label {
+    font-size: 14px;
+    font-weight: 600;
+    padding: 2px 2px;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.inputField input, .inputField textarea {
+    border: 1px solid #b5b5b5;
+    border-radius: 5px;
+    padding: 8px 12px;
+    width: 100%;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.inputField input:focus, .inputField textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.inputField textarea {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Education and Experience container styling */
+.educationContainer, .experienceContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+    padding: 15px;
+}
+
+/* Degree/Company and Role styling */
+.degreeMark, .companyRole {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+}
+
+.degreeMark .inputField, .companyRole .inputField {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Date fields styling */
+.dates {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-around;
+    gap: 15px;
+}
+
+.dates .inputField {
+    flex: 1;
+}
+
+/* CGPA field styling */
+.educationContainer > .inputField {
+    align-self: flex-start;
+    width: 50%;
+}
+
+/* Button styling */
+button {
+    padding: 8px 20px;
+    border: 1px solid #333;
+    border-radius: 25px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button[id^="add"] {
+    border: 1px solid #888;
+    border-radius: 25px;
+    padding: 8px 25px;
+    background: transparent;
+    color: #333;
+}
+
+button[id^="add"]:hover {
+    background: #f8f9fa;
+    border-color: #666;
+}
+
+button[class^="save"] {
+    background: #cbffcb;
+    border-color: #28a745;
+    color: #155724;
+}
+
+button[class^="save"]:hover {
+    background: #b8efb8;
+    border-color: #1e7e34;
+}
+
+button[class^="remove"] {
+    background: #ffd6d6;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+button[class^="remove"]:hover {
+    background: #ffc2c2;
+    border-color: #c82333;
+}
+
+/* Button container styling */
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+    width: 100%;
+    border-top: 1px solid #cdcdcd;
+    padding-top: 15px;
+    margin-top: 10px;
+}
+
+/* Skills section styling */
+#skills .top {
+    align-items: center;
+}
+
+#skills .top div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#skills .top input {
+    padding: 8px 12px;
+    border: 1px solid #b5b5b5;
+    border-radius: 5px;
+    font-size: 14px;
+    min-width: 200px;
+}
+
+#skills .top input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* Skill field styling */
+#skills .container .skillField {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    width: fit-content;
+    gap: 20px;
+    padding: 5px 5px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 1px solid #6e6e6e;
+}
+
+.skillField span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    padding: 0px 15px;
+}
+
+.skillRemove button {
+    background: #ffcbd0;
+    color: #dc3545;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.skillRemove button:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+/* Remove button containers */
+.removeBtn, .saveButton {
+    display: flex;
+    align-items: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .nameField, .degreeMark, .companyRole {
+        flex-direction: column;
+    }
+    
+    .nameField input, .degreeMark .inputField, .companyRole .inputField {
+        min-width: 100%;
+    }
+    
+    .dates {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .top {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+    
+    .top h1 {
+        text-align: center;
+    }
+    
+    .buttons {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    section > .container > div, #profile, .skillField {
+        width: 95%;
+    }
+    
+    .educationContainer > .inputField {
+        width: 100%;
+    }
+}
+
+/* Additional styling for better visual hierarchy */
+section {
+    margin-bottom: 30px;
+}
+
+section:last-child {
+    margin-bottom: 60px;
+}
+
+/* Focus states for better accessibility */
+input:focus, textarea:focus, button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Smooth transitions */
+* {
+    transition: all 0.2s ease;
+}
+
+#skills .container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 80%;
+}

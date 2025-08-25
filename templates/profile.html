@@ -42,14 +42,14 @@
         </div>`
 
         <div class="buttons">
-            <button class="savProfile">Save</button>
+            <button class="savProfile" onclick="saveProfile()">Save</button>
         </div>
     </section>
 
     <section id="educations">
         <div class="top">
             <h1>Education</h1>
-            <button id="addEducation" onclick="addEducation()">+ Add</button>
+            <button id="addEducation" onclick="addEducation()">Add</button>
         </div>
 
         <div class="container">
@@ -57,15 +57,33 @@
             <div class="educationField" educationId="{{ education.educationId }}">
                 <div class="educationContainer">
                     <div class="degreeMark">
-                        <input type="text" class="school" value="{{ education.school }}" placeholder="School" />
-                        <input type="text" class="degree" value="{{ education.degree }}" placeholder="Degree" />
-                        <input type="text" class="fieldOfStudy" value="{{ education.fieldOfStudy }}" placeholder="Field Of Study" />
+                        <div class="inputField">
+                            <label for="edu-school-{{ education.educationId }}">School</label>
+                            <input type="text" id="edu-school-{{ education.educationId }}" class="school" value="{{ education.school }}" placeholder="School" />
+                        </div>
+                        <div class="inputField">
+                            <label for="edu-degree-{{ education.educationId }}">Degree</label>
+                            <input type="text" id="edu-degree-{{ education.educationId }}" class="degree" value="{{ education.degree }}" placeholder="Degree" />
+                        </div>
+                        <div class="inputField">
+                            <label for="edu-fos-{{ education.educationId }}">Field Of Study</label>
+                            <input type="text" id="edu-fos-{{ education.educationId }}" class="fieldOfStudy" value="{{ education.fieldOfStudy }}" placeholder="Field Of Study" />
+                        </div>
                     </div>
                     <div class="dates">
-                        <input type="date" name="startDate" class="startDate" value="{{ education.startDate }}" />
-                        <input type="date" name="endDate" class="endDate" value="{{ education.endDate }}" />
+                        <div class="inputField">
+                            <label for="edu-start-{{ education.educationId }}">Start Date</label>
+                            <input type="date" id="edu-start-{{ education.educationId }}" name="startDate" class="startDate" value="{{ education.startDate }}" />
+                        </div>
+                        <div class="inputField">
+                            <label for="edu-end-{{ education.educationId }}">End Date</label>
+                            <input type="date" id="edu-end-{{ education.educationId }}" name="endDate" class="endDate" value="{{ education.endDate }}" />
+                        </div>
                     </div>
-                    <input type="number" name="cgpa" class="cgpa" value="{{ education.cgpa }}" placeholder="CGPA" />
+                    <div class="inputField">
+                        <label for="edu-cgpa-{{ education.educationId }}">CGPA</label>
+                        <input type="number" id="edu-cgpa-{{ education.educationId }}" name="cgpa" class="cgpa" value="{{ education.cgpa }}" placeholder="CGPA" />
+                    </div>
                 </div>
                 <div class="buttons">
                     <div class="removeBtn">
@@ -84,7 +102,7 @@
         <section id="experiences">
         <div class="top">
             <h1>Experiences</h1>
-            <button id="addExperience" onclick="addExperience()">+ Add</button>
+            <button id="addExperience" onclick="addExperience()">Add</button>
         </div>
 
         <div class="container">
@@ -92,14 +110,29 @@
                 <div class="experienceField" experienceId="{{ experience.experienceId }}">
                     <div class="experienceContainer">
                         <div class="companyRole">
-                            <input type="text" id="exp-company-{{experience.experienceId}}" class="company" value="{{ experience.company }}" placeholder="Company" />
-                            <input type="text" id="exp-position-{{experience.experienceId}}" class="position" value="{{ experience.position }}" placeholder="Position" />
+                            <div class="inputField">
+                                <label for="exp-company-{{experience.experienceId}}">Company</label>
+                                <input type="text" id="exp-company-{{experience.experienceId}}" class="company" value="{{ experience.company }}" placeholder="Company" />
+                            </div>
+                            <div class="inputField">
+                                <label for="exp-position-{{experience.experienceId}}">Position</label>
+                                <input type="text" id="exp-position-{{experience.experienceId}}" class="position" value="{{ experience.position }}" placeholder="Position" />
+                            </div>
                         </div>
                         <div class="dates">
-                            <input type="date" id="exp-start-{{experience.experienceId}}" name="startDate" class="startDate" value="{{ experience.startDate }}" />
-                            <input type="date" id="exp-end-{{experience.experienceId}}" name="endDate" class="endDate" value="{{ experience.endDate }}" />
+                            <div class="inputField">
+                                <label for="exp-start-{{experience.experienceId}}">Start Date</label>
+                                <input type="date" id="exp-start-{{experience.experienceId}}" name="startDate" class="startDate" value="{{ experience.startDate }}" />
+                            </div>
+                            <div class="inputField">
+                                <label for="exp-end-{{experience.experienceId}}">End Date</label>
+                                <input type="date" id="exp-end-{{experience.experienceId}}" name="endDate" class="endDate" value="{{ experience.endDate }}" />
+                            </div>
                         </div>
-                        <textarea id="exp-desc-{{experience.experienceId}}" name="description" class="description">{{ experience.description }}</textarea>
+                        <div class="inputField">
+                            <label for="exp-desc-{{experience.experienceId}}">Description</label>
+                            <textarea id="exp-desc-{{experience.experienceId}}" name="description" class="description">{{ experience.description }}</textarea>
+                        </div>
                     </div>
                     <div class="buttons">
                         <div class="removeBtn">
@@ -119,7 +152,7 @@
             <h1>Skill</h1>
             <div>
                 <input type="text" name="newSkill" id="newSkill">
-                <button id="addSkill" onclick="addSkill()">+ Add</button>
+                <button id="addSkill" onclick="addSkill()">Add</button>
             </div>
         </div>
         
@@ -128,7 +161,7 @@
                 <div class="skillField" skillId="{{ skill.skillId }}">
                     <span>{{ skill.skill }}</span>
                     <div class="skillRemove">
-                        <button class="removeSkill" skillId="{{ skill.skillId }}" onclick="removeSkill(this)">X</button>
+                        <button class="removeSkill" skillId="{{ skill.skillId }}" onclick="removeSkill(this)">✕</button>
                     </div>
                 </div>
             {% endfor %}

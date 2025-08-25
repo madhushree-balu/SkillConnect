@@ -30,14 +30,21 @@ function addSkill() {
         var newSkillId = data["skillId"];
         newSkillElement.setAttribute("skillId", newSkillId);
         newSkillElement.innerHTML = `
-            <span>${skill}<span/>
+            <span>${skill}</span>
             <div class="skillRemove">
-                <button class="removeSkill" skillId="${newSkillId}">X</button>
+                <button class="removeSkill" skillId="${newSkillId}">✕</button>
             </div>
         `;
         skillContainer.appendChild(newSkillElement);
+        newSkill.value = "";
     })
 }
+
+document.getElementById("newSkill").addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        addSkill();
+    }
+});
 
 
 function removeSkill(e) {
@@ -83,15 +90,29 @@ function addExperience() {
             newExperienceElement.innerHTML = `
                 <div class="experienceContainer">
                         <div class="companyRole">
-                            <input type="text" id="exp-company-${experienceId}" class="company" placeholder="Company" />
-                            <input type="text" id="exp-position-${experienceId}" class="position" placeholder="Position" />
+                            <div class="inputField">
+                                <label for="exp-company-${experienceId}">Company</label>
+                                <input type="text" id="exp-company-${experienceId}" class="company" placeholder="Company" />
+                            </div>
+                            <div class="inputField">
+                                <label for="exp-position-${experienceId}">Position</label>
+                                <input type="text" id="exp-position-${experienceId}" class="position" placeholder="Position" />
+                            </div>
                         </div>
                         <div class="dates">
-                            <input type="date" id="exp-start-${experienceId}" name="startDate" class="startDate"  />
-                            <input type="date" id="exp-end-${experienceId}" name="endDate" class="endDate"  />
+                            <div class="inputField">
+                                <label for="exp-start-${experienceId}">Start Date</label>
+                                <input type="date" id="exp-start-${experienceId}" name="startDate" class="startDate"  />
+                            </div>
+                            <div class="inputField">
+                                <label for="exp-end-${experienceId}">End Date</label>
+                                <input type="date" id="exp-end-${experienceId}" name="endDate" class="endDate"  />
+                            </div>
                         </div>
-                        <textarea id="exp-desc-${experienceId}" name="description" class="description">
-                        </textarea>
+                        <div class="inputField">
+                            <label for="exp-desc-${experienceId}">Description</label>
+                            <textarea id="exp-desc-${experienceId}" name="description" class="description"></textarea>
+                        </div>
                     </div>
                     <div class="buttons">
                         <div class="removeBtn">
@@ -184,6 +205,146 @@ function addEducation() {
                     alert(json["error"]);
                     return;
                 }
+
+                newEducationElement.innerHTML = `
+                    <div class="educationContainer">
+                        <div class="degreeMark">
+
+                        <div class="inputField">
+                            <label for="edu-school-${json["educationId"]}">School</label>    
+                        <input type="text" id="edu-school-${json["educationId"]}" class="school" placeholder="School" />
+                        </div>
+                            <div class="inputField">
+                            <label for="edu-degree-${json["educationId"]}">School</label>
+                            <input type="text" id="edu-degree-${json["educationId"]}" class="degree" placeholder="Degree" />
+                            </div>
+                            <div class="inputField">
+                            <label for="edu-fos-${json["educationId"]}">School</label>
+                            <input type="text" id="edu-fos-${json["educationId"]}" class="fieldOfStudy" placeholder="Field Of Study" />
+                            </div>
+                        </div>
+                        <div class="dates">
+                        <div class="inputField">
+                            <label for="edu-start-${json["educationId"]}">School</label>    
+                        <input type="date" id="edu-start-${json["educationId"]}" name="startDate" class="startDate"  />
+                        </div>
+                            <div class="inputField">
+                            <label for="edu-end-${json["educationId"]}">School</label>
+                            <input type="date" id="edu-end-${json["educationId"]}" name="endDate" class="endDate"  />
+                            </div>
+                        </div>
+                        <div class="inputField">
+                            <label for="edu-cgpa-${json["educationId"]}">School</label>
+                        <input type="number" id="edu-cgpa-${json["educationId"]}" name="cgpa" class="cgpa"  />
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <div class="removeBtn">
+                            <button class="removeEducation" educationId="${json["educationId"]}" onclick="removeEducation(this)">Remove</button>
+                        </div>
+                        <div class="saveButton">
+                            <button class="saveEducation" educationId="${json["educationId"]}" onclick="saveEducation(this)">Save</button>
+                        </div>
+                    </div>
+                `;
+                educationContainer.appendChild(newEducationElement);
+
             })
+    })
+}
+
+function removeEducation(e) {
+    var educationId = e.getAttribute("educationId");
+    fetch("/api/education/remove", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            educationId: educationId
+        })
+    }).then(response => {
+        return response.json()
+    }).then(json => {
+        if (json["success"] == false) {
+            alert(json["error"]);
+            return;
+        }
+        e.parentNode.parentNode.parentNode.remove();
+        return;
+    })
+
+}
+
+function saveEducation(e) {
+    var educationId = e.getAttribute("educationId");
+    var school = document.getElementById(`edu-school-${educationId}`).value;
+    var degree = document.getElementById(`edu-degree-${educationId}`).value;
+    var fieldOfStudy = document.getElementById(`edu-fos-${educationId}`).value;
+    var start = document.getElementById(`edu-start-${educationId}`).value;
+    var end = document.getElementById(`edu-end-${educationId}`).value;
+    var cgpa = document.getElementById(`edu-cgpa-${educationId}`).value;
+
+    fetch("/api/education/modify", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            educationId: educationId,
+            school: school,
+            degree: degree,
+            startDate: start,
+            endDate: end,
+            cgpa: cgpa,
+            fieldOfStudy: fieldOfStudy
+        })
+    }).then(response => {
+        return response.json()
+    }).then(json => {
+
+        if (json["success"] == false) {
+            alert(json["error"]);
+            return;
+        }
+        alert("Saved!");
+        return;
+    })
+}
+
+function saveProfile() {
+    var firstName = document.getElementById("firstName").value;
+    var middleName = document.getElementById("middleName").value;
+    var lastName = document.getElementById("lastName").value;
+    var summary = document.getElementById("summary").value;
+    var phoneNumber = document.getElementById("phoneNumber").value;
+    var address = document.getElementById("address").value;
+    var personalWebsite = document.getElementById("personalWebsite").value;
+    var contactEmail = document.getElementById("contactEmail").value;
+
+    fetch("/api/profile/modify", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            firstName: firstName,
+            middleName: middleName,
+            lastName: lastName,
+            summary: summary,
+            phoneNumber: phoneNumber,
+            address: address,
+            personalWebsite: personalWebsite,
+            contactEmail: contactEmail
+        })
+    }).then(response => {
+        return response.json()
+    }).then(json => {
+        if (json["success"] == false) {
+            alert(json["error"]);
+            return;
+        }
+        alert("Saved!");
+        return;
     })
 }

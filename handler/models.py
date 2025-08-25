@@ -62,7 +62,7 @@ class Education(BaseModel):
     fieldOfStudy: str = ""
     startDate: str = ""
     endDate: Optional[str] = ""
-    cgpa: Optional[float] = ""
+    cgpa: Optional[float] = 0.0
 
 
 class Experience(BaseModel):
