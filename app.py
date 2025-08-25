@@ -5,7 +5,7 @@ from flask import (
 import re
 from handler import db, models, utils
 
-from blueprints import api, auth
+from blueprints import api, auth, recruiter_api, recruiter_auth
 
 app = Flask(__name__)
 app.secret_key = "My Secret Key"
@@ -94,6 +94,8 @@ def profile():
 
 app.register_blueprint(api.api)
 app.register_blueprint(auth.auth)
+app.register_blueprint(recruiter_api.recruiter_api)
+app.register_blueprint(recruiter_auth.recruiter_auth)
 
 
 if __name__ == "__main__":
