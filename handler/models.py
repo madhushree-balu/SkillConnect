@@ -57,22 +57,22 @@ class UserSkill(BaseModel):
 class Education(BaseModel):
     educationId: int = Field(default=-1, description="Auto-generated education ID")
     userId: int = Field(default=-1, description="Associated user ID")
-    school: str = Field(..., min_length=1, description="School/University name")
-    degree: str = Field(..., min_length=1, description="Degree obtained")
-    fieldOfStudy: str = Field(..., min_length=1, description="Field of study")
-    startDate: str = Field(..., description="Start date (YYYY-MM-DD format)")
-    endDate: Optional[str] = Field(default=None, description="End date (YYYY-MM-DD format, null if ongoing)")
-    cgpa: Optional[float] = Field(default=None, ge=0.0, le=10.0, description="CGPA score")
+    school: str = ""
+    degree: str = ""
+    fieldOfStudy: str = ""
+    startDate: str = ""
+    endDate: Optional[str] = ""
+    cgpa: Optional[float] = ""
 
 
 class Experience(BaseModel):
     experienceId: int = Field(default=-1, description="Auto-generated experience ID")
     userId: int = Field(default=-1, description="Associated user ID")
-    company: str = Field(..., min_length=1, description="Company name")
-    position: str = Field(..., min_length=1, description="Job position/title")
-    startDate: str = Field(..., description="Start date (YYYY-MM-DD format)")
-    endDate: Optional[str] = Field(default=None, description="End date (YYYY-MM-DD format, null if current)")
-    description: Optional[str] = Field(default=None, description="Job description")
+    company: str = ""
+    position: str = ""
+    startDate: str = ""
+    endDate: Optional[str] = ""
+    description: Optional[str] = ""
 
 
 # --------------------------
