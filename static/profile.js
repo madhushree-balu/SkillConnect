@@ -30,9 +30,9 @@ function addSkill() {
         var newSkillId = data["skillId"];
         newSkillElement.setAttribute("skillId", newSkillId);
         newSkillElement.innerHTML = `
-            <span>${ skill }<span/>
+            <span>${skill}<span/>
             <div class="skillRemove">
-                <button class="removeSkill" skillId="${ newSkillId }">X</button>
+                <button class="removeSkill" skillId="${newSkillId}">X</button>
             </div>
         `;
         skillContainer.appendChild(newSkillElement);
@@ -130,7 +130,7 @@ function saveExperience(e) {
             startDate: start,
             endDate: end
         })
-    }).then( response => {
+    }).then(response => {
         return response.json()
     }).then(json => {
 
@@ -155,7 +155,7 @@ function removeExperience(e) {
         body: JSON.stringify({
             experienceId: experienceId
         })
-    }).then( response => {
+    }).then(response => {
         return response.json()
     }).then(json => {
         if (json["success"] == false) {
@@ -164,5 +164,26 @@ function removeExperience(e) {
         }
         e.parentNode.parentNode.parentNode.remove();
         return;
+    })
+}
+
+function addEducation() {
+    var educationContainer = document.querySelector("#educations .container");
+    var newEducationElement = document.createElement("div");
+    newEducationElement.className = "educationField";
+
+    fetch("/api/education/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => {
+        response.json()
+            .then(json => {
+                if (json["success"] == false) {
+                    alert(json["error"]);
+                    return;
+                }
+            })
     })
 }
