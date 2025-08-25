@@ -55,7 +55,7 @@
         <div class="container">
             {%  for education in educations %}
             <div class="educationField" educationId="{{ education.educationId }}">
-                <div class="container">
+                <div class="educationContainer">
                     <div class="degreeMark">
                         <input type="text" class="school" value="{{ education.school }}" placeholder="School" />
                         <input type="text" class="degree" value="{{ education.degree }}" placeholder="Degree" />
@@ -90,7 +90,7 @@
         <div class="container">
             {% for experience in experiences %}
                 <div class="experienceField" experienceId="{{ experience.experienceId }}">
-                    <div class="container">
+                    <div class="experienceContainer">
                         <div class="companyRole">
                             <input type="text" class="company" value="{{ experience.company }}" placeholder="Company" />
                             <input type="text" class="position" value="{{ experience.position }}" placeholder="Position" />

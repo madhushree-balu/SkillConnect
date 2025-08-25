@@ -60,3 +60,32 @@ function removeSkill(e) {
         })
     })
 }
+
+
+function addExperience() {
+    var experienceContainer = document.querySelector("#experiences .container");
+    var newExperienceElement = document.createElement("div");
+    newExperienceElement.className = "experienceField";
+
+    fetch("/api/experience/create", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(response => {
+        response.json().then(json => {
+            if (json["success"] == false) {
+                alert(json["error"]);
+                return;
+            }
+            newExperienceElement.setAttribute("experienceId", json["experienceId"]);
+            newExperienceElement.innerHTML = `
+                <div class="experienceRemove">
+                    <button class="removeExp-erience" experienceId="${ json["experienceId"] }">X</button>
+                </div>
+            `;
+            experienceContainer.appendChild(newExperienceElement);
+        })
+    })
+
+}
