@@ -87,7 +87,9 @@ def profile():
     experience = userHandler.get_experiences(userId) or []
     skills = userHandler.get_user_skills_with_names(userId) or []
 
-    return render_template("profile.html", user=user, profile=profile, education=education, experience=experience, skills=skills)
+    print(experience)
+
+    return render_template("profile.html", user=user, profile=profile, educations=education, experiences=experience, skills=skills)
 
 
 app.register_blueprint(api.api)

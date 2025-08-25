@@ -213,6 +213,8 @@ def modify_experience():
             "error": "User is not logged in!"
         }
 
+    print(data)
+
     updatedExperience = models.Experience(
         experienceId = data["experienceId"],
         userId = userId,

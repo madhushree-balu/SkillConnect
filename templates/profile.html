@@ -84,7 +84,7 @@
         <section id="experiences">
         <div class="top">
             <h1>Experiences</h1>
-            <button id="addExperience">+ Add</button>
+            <button id="addExperience" onclick="addExperience()">+ Add</button>
         </div>
 
         <div class="container">
@@ -92,16 +92,14 @@
                 <div class="experienceField" experienceId="{{ experience.experienceId }}">
                     <div class="experienceContainer">
                         <div class="companyRole">
-                            <input type="text" class="company" value="{{ experience.company }}" placeholder="Company" />
-                            <input type="text" class="position" value="{{ experience.position }}" placeholder="Position" />
+                            <input type="text" id="exp-company-{{experience.experienceId}}" class="company" value="{{ experience.company }}" placeholder="Company" />
+                            <input type="text" id="exp-position-{{experience.experienceId}}" class="position" value="{{ experience.position }}" placeholder="Position" />
                         </div>
                         <div class="dates">
-                            <input type="date" name="startDate" class="startDate" value="{{ experience.startDate }}" />
-                            <input type="date" name="endDate" class="endDate" value="{{ experience.endDate }}" />
+                            <input type="date" id="exp-start-{{experience.experienceId}}" name="startDate" class="startDate" value="{{ experience.startDate }}" />
+                            <input type="date" id="exp-end-{{experience.experienceId}}" name="endDate" class="endDate" value="{{ experience.endDate }}" />
                         </div>
-                        <textarea name="description" class="description">
-                            "{{ experience.description }}"
-                        </textarea>
+                        <textarea id="exp-desc-{{experience.experienceId}}" name="description" class="description">{{ experience.description }}</textarea>
                     </div>
                     <div class="buttons">
                         <div class="removeBtn">
