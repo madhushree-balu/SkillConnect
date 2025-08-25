@@ -70,15 +70,10 @@ def signup_post():
         flash('Password is required', 'error')
         return redirect(url_for('auth.signup'))
 
-    if userType not in [ut.value for ut in models.UserType]:
-        flash('Invalid user type', 'error')
-        return redirect(url_for('auth.signup'))
-
     user = models.User(
         username=username.strip().lower(),
         email=email.strip(),
-        password= utils.hash_password(password)  ,
-        userType=models.UserType(userType)
+        password= utils.hash_password(password)
     )
 
     if userHandler.get_user_id(email=email) is not None:

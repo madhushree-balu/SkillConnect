@@ -2,22 +2,59 @@ from pydantic import BaseModel, Field
 from typing import List, Literal, Optional
 from enum import Enum
 
-# User Type Enum
-class UserType(Enum):
-    FREELANCER = "FREELANCER"
-    EMPLOYER = "RECRUITER"
+
+class Recruiter(BaseModel):
+    recruiterId: int = Field(default=-1, description="Auto-generated recruiter ID")
+    name: str = Field(..., min_length=1, description="Recruiter name")
+    email: str = Field(..., description="Email address")
+    password: str = Field(..., min_length=1, description="Hashed password")
+    company: str = ""
+    location: str = ""
+    website: str = ""
+    contact_email: str = ""
+    contact_number: str = ""
+
+
+class JobPost(BaseModel):
+    jobId: int = Field(default=-1, description="Auto-generated job ID")
+    recruiterId: int = Field(default=-1, description="Associated recruiter ID")
+    title: str = Field(..., min_length=1, description="Job title")
+    description: str = Field(..., min_length=1, description="Job description")
+    location: str = ""
+    salary: float = 0.0
+    experience: int = 0
+
+class JobSkills(BaseModel):
+    jobId: int = Field(..., description="Job ID")
+    skillId: int = Field(..., description="Skill ID")
+
+class JobApplications(BaseModel):
+    jobId: int = Field(..., description="Job ID")
+    freelancerId: int = Field(..., description="Freelancer ID")
+    applicationDate: str = ""
+    resumeId: int = -1
+
+
+class Resume(BaseModel):
+    resumeId: int = Field(default=-1, description="Auto-generated resume ID")
+    freelancerId: int = Field(default=-1, description="Associated freelancer ID")
+    name: str = Field(..., min_length=1, description="Resume name")
+    pdfData: bytes = Field(..., description="PDF data")
+
+
+class RecruiterSession(BaseModel):
+    sessionId: str = Field(..., description="Unique session identifier")
+    recruiterId: int = Field(..., description="Associated recruiter ID")
+
 
 # --------------------------
 # Core User & Session Models
 # --------------------------
-
 class User(BaseModel):
     userId: int = Field(default=-1, description="Auto-generated user ID")
     username: str = Field(..., min_length=1, description="Unique username")
     email: str = Field(..., description="Unique email address")
     password: str = Field(..., min_length=1, description="Hashed password")
-    userType: UserType
-
 
 class UserProfile(BaseModel):
     userId: int = Field(..., description="User ID")
@@ -83,7 +120,6 @@ class CreateUserRequest(BaseModel):
     username: str = Field(..., min_length=1)
     email: str
     password: str = Field(..., min_length=8)
-    userType: UserType
 
 
 class LoginRequest(BaseModel):
@@ -126,7 +162,6 @@ class UserResponse(BaseModel):
     userId: int
     username: str
     email: str
-    userType: UserType
 
 
 class LoginResponse(BaseModel):

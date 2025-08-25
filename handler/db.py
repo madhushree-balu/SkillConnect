@@ -123,6 +123,8 @@ class DB:
             cursor = connection.cursor()
             cursor.executescript(create_table_commands)
             connection.commit()
+            create_additional_tables()
+        
     
     def __enter__(self):
         if self.connection is None:
@@ -148,7 +150,7 @@ class UserHandler:
             try:
                 cursor.execute(
                     "INSERT INTO users (username, email, password, user_type) VALUES (?, ?, ?, ?)",
-                    (user.username, user.email, user.password, user.userType.value)
+                    (user.username, user.email, user.password)
                 )
                 newUserId = cursor.lastrowid
                 connection.commit()
@@ -181,7 +183,7 @@ class UserHandler:
                 username=row[1],
                 email=row[2],
                 password=row[3],
-                userType=row[4]
+                
             )
     
     def update_user(self, user: models.User) -> models.User | None:
@@ -192,7 +194,7 @@ class UserHandler:
             try:
                 cursor.execute(
                     "UPDATE users SET username = ?, email = ?, password = ?, user_type = ? WHERE userId = ?",
-                    (user.username, user.email, user.password, user.userType, user.userId)
+                    (user.username, user.email, user.password, user.userId)
                 )
                 connection.commit()
                 return user
@@ -232,21 +234,6 @@ class UserHandler:
 
             return utils.hash_password(password) == row[0]
         
-    def get_user_type(self, userId: int) -> models.UserType | None:
-        with DB() as connection:
-            if not connection:
-                return None
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT user_type FROM users WHERE userId = ?",
-                (userId,)
-            )
-            row = cursor.fetchone()
-
-            if row is None:
-                return None
-            
-            return row[0] if row[0] in ['FREELANCER', 'RECRUITER'] else None
         
     def get_user_id(self, email: str | None = None, username: str | None = None) -> int | None:
         if email is None and username is None:
@@ -678,3 +665,604 @@ class SessionHandler:
             cursor = connection.cursor()
             cursor.execute("DELETE FROM sessions")
             connection.commit()
+            
+            
+
+additional_create_table_commands = """
+-- Recruiter Tables
+CREATE TABLE IF NOT EXISTS recruiters (
+    recruiterId INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    company TEXT DEFAULT '',
+    location TEXT DEFAULT '',
+    website TEXT DEFAULT '',
+    contact_email TEXT DEFAULT '',
+    contact_number TEXT DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS recruiter_sessions (
+    sessionId TEXT PRIMARY KEY,
+    recruiterId INTEGER NOT NULL,
+    FOREIGN KEY (recruiterId) REFERENCES recruiters(recruiterId) ON DELETE CASCADE
+);
+
+-- Job Tables
+CREATE TABLE IF NOT EXISTS job_posts (
+    jobId INTEGER PRIMARY KEY AUTOINCREMENT,
+    recruiterId INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    location TEXT DEFAULT '',
+    salary REAL DEFAULT 0.0,
+    experience INTEGER DEFAULT 0,
+    FOREIGN KEY (recruiterId) REFERENCES recruiters(recruiterId) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS job_skills (
+    jobId INTEGER NOT NULL,
+    skillId INTEGER NOT NULL,
+    PRIMARY KEY (jobId, skillId),
+    FOREIGN KEY (jobId) REFERENCES job_posts(jobId) ON DELETE CASCADE,
+    FOREIGN KEY (skillId) REFERENCES skills(skillId) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS job_applications (
+    jobId INTEGER NOT NULL,
+    freelancerId INTEGER NOT NULL,
+    applicationDate TEXT DEFAULT '',
+    resumeId INTEGER DEFAULT -1,
+    PRIMARY KEY (jobId, freelancerId),
+    FOREIGN KEY (jobId) REFERENCES job_posts(jobId) ON DELETE CASCADE,
+    FOREIGN KEY (freelancerId) REFERENCES users(userId) ON DELETE CASCADE,
+    FOREIGN KEY (resumeId) REFERENCES resumes(resumeId) ON DELETE SET NULL
+);
+
+-- Resume Table
+CREATE TABLE IF NOT EXISTS resumes (
+    resumeId INTEGER PRIMARY KEY AUTOINCREMENT,
+    freelancerId INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    pdfData BLOB NOT NULL,
+    FOREIGN KEY (freelancerId) REFERENCES users(userId) ON DELETE CASCADE
+);
+
+-- Additional Indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_recruiters_email ON recruiters(email);
+CREATE INDEX IF NOT EXISTS idx_recruiter_sessions_recruiterId ON recruiter_sessions(recruiterId);
+CREATE INDEX IF NOT EXISTS idx_job_posts_recruiterId ON job_posts(recruiterId);
+CREATE INDEX IF NOT EXISTS idx_job_skills_jobId ON job_skills(jobId);
+CREATE INDEX IF NOT EXISTS idx_job_skills_skillId ON job_skills(skillId);
+CREATE INDEX IF NOT EXISTS idx_job_applications_jobId ON job_applications(jobId);
+CREATE INDEX IF NOT EXISTS idx_job_applications_freelancerId ON job_applications(freelancerId);
+CREATE INDEX IF NOT EXISTS idx_resumes_freelancerId ON resumes(freelancerId);
+"""
+
+
+class RecruiterHandler:
+    def create_recruiter(self, recruiter: models.Recruiter) -> models.Recruiter | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "INSERT INTO recruiters (name, email, password, company, location, website, contact_email, contact_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    (recruiter.name, recruiter.email, recruiter.password, recruiter.company, recruiter.location, recruiter.website, recruiter.contact_email, recruiter.contact_number)
+                )
+                newRecruiterId = cursor.lastrowid
+                connection.commit()
+                
+                if newRecruiterId is None:
+                    return None
+                
+                recruiter.recruiterId = newRecruiterId
+                return recruiter
+            except sqlite3.IntegrityError:
+                return None
+
+    def get_recruiter(self, recruiterId: int = -1, email: str = "") -> models.Recruiter | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM recruiters WHERE recruiterId = ? OR email = ?",
+                (recruiterId, email)
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+            
+            return models.Recruiter(
+                recruiterId=row[0],
+                name=row[1],
+                email=row[2],
+                password=row[3],
+                company=row[4],
+                location=row[5],
+                website=row[6],
+                contact_email=row[7],
+                contact_number=row[8]
+            )
+    
+    def update_recruiter(self, recruiter: models.Recruiter) -> models.Recruiter | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE recruiters SET name = ?, email = ?, password = ?, company = ?, location = ?, website = ?, contact_email = ?, contact_number = ? WHERE recruiterId = ?",
+                    (recruiter.name, recruiter.email, recruiter.password, recruiter.company, recruiter.location, recruiter.website, recruiter.contact_email, recruiter.contact_number, recruiter.recruiterId)
+                )
+                connection.commit()
+                return recruiter
+            except sqlite3.IntegrityError:
+                return None
+
+    def delete_recruiter(self, recruiterId: int) -> bool:
+        recruiter = self.get_recruiter(recruiterId)
+        if recruiter is None:
+            return False
+            
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM recruiters WHERE recruiterId = ?",
+                (recruiterId,)
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+    def match_password(self, recruiterId: int, password: str) -> bool:
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT password FROM recruiters WHERE recruiterId = ?",
+                (recruiterId,)
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return False
+
+            return utils.hash_password(password) == row[0]
+
+    def get_recruiter_id(self, email: str) -> int | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT recruiterId FROM recruiters WHERE email = ?",
+                (email,)
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+            return row[0]
+
+
+class JobPostHandler:
+    def create_job_post(self, job_post: models.JobPost) -> models.JobPost | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "INSERT INTO job_posts (recruiterId, title, description, location, salary, experience) VALUES (?, ?, ?, ?, ?, ?)",
+                    (job_post.recruiterId, job_post.title, job_post.description, job_post.location, job_post.salary, job_post.experience)
+                )
+                newJobId = cursor.lastrowid
+                connection.commit()
+                
+                if newJobId is None:
+                    return None
+                
+                job_post.jobId = newJobId
+                return job_post
+            except sqlite3.IntegrityError:
+                return None
+
+    def get_job_post(self, jobId: int) -> models.JobPost | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM job_posts WHERE jobId = ?",
+                (jobId,)
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+            
+            return models.JobPost(
+                jobId=row[0],
+                recruiterId=row[1],
+                title=row[2],
+                description=row[3],
+                location=row[4],
+                salary=row[5],
+                experience=row[6]
+            )
+
+    def get_job_posts_by_recruiter(self, recruiterId: int) -> List[models.JobPost] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM job_posts WHERE recruiterId = ?",
+                (recruiterId,)
+            )
+            rows = cursor.fetchall()
+            return [models.JobPost(
+                jobId=row[0],
+                recruiterId=row[1],
+                title=row[2],
+                description=row[3],
+                location=row[4],
+                salary=row[5],
+                experience=row[6]
+            ) for row in rows]
+
+    def get_all_job_posts(self) -> List[models.JobPost] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM job_posts")
+            rows = cursor.fetchall()
+            return [models.JobPost(
+                jobId=row[0],
+                recruiterId=row[1],
+                title=row[2],
+                description=row[3],
+                location=row[4],
+                salary=row[5],
+                experience=row[6]
+            ) for row in rows]
+
+    def update_job_post(self, job_post: models.JobPost) -> models.JobPost | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE job_posts SET title = ?, description = ?, location = ?, salary = ?, experience = ? WHERE jobId = ?",
+                    (job_post.title, job_post.description, job_post.location, job_post.salary, job_post.experience, job_post.jobId)
+                )
+                connection.commit()
+                return job_post
+            except sqlite3.IntegrityError:
+                return None
+
+    def delete_job_post(self, jobId: int) -> bool:
+        job_post = self.get_job_post(jobId)
+        if job_post is None:
+            return False
+            
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM job_posts WHERE jobId = ?",
+                (jobId,)
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+
+class JobSkillHandler:
+    def add_job_skill(self, jobId: int, skill: str) -> models.JobSkills | None:
+        skill_id = SkillHandler().get_skill_id(skill)
+        if not skill_id:
+            return None
+            
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "INSERT INTO job_skills (jobId, skillId) VALUES (?, ?)",
+                    (jobId, skill_id)
+                )
+                connection.commit()
+                return models.JobSkills(jobId=jobId, skillId=skill_id)
+            except sqlite3.IntegrityError:
+                return None
+
+    def get_job_skills(self, jobId: int) -> List[models.JobSkills] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM job_skills WHERE jobId = ?",
+                (jobId,)
+            )
+            rows = cursor.fetchall()
+            return [models.JobSkills(jobId=row[0], skillId=row[1]) for row in rows]
+
+    def get_job_skills_with_names(self, jobId: int) -> List[models.Skill] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                """SELECT s.skillId, s.skill 
+                   FROM skills s 
+                   JOIN job_skills js ON s.skillId = js.skillId 
+                   WHERE js.jobId = ?""",
+                (jobId,)
+            )
+            rows = cursor.fetchall()
+            return [models.Skill(skillId=row[0], skill=row[1]) for row in rows]
+
+    def remove_job_skill(self, jobId: int, skillId: int) -> bool:
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM job_skills WHERE jobId = ? AND skillId = ?",
+                (jobId, skillId)
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+    def remove_all_job_skills(self, jobId: int) -> None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM job_skills WHERE jobId = ?",
+                (jobId,)
+            )
+            connection.commit()
+
+
+class JobApplicationHandler:
+    def create_application(self, application: models.JobApplications) -> models.JobApplications | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "INSERT INTO job_applications (jobId, freelancerId, applicationDate, resumeId) VALUES (?, ?, ?, ?)",
+                    (application.jobId, application.freelancerId, application.applicationDate, application.resumeId)
+                )
+                connection.commit()
+                return application
+            except sqlite3.IntegrityError:
+                return None
+
+    def get_applications_by_job(self, jobId: int) -> List[models.JobApplications] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM job_applications WHERE jobId = ?",
+                (jobId,)
+            )
+            rows = cursor.fetchall()
+            return [models.JobApplications(
+                jobId=row[0],
+                freelancerId=row[1],
+                applicationDate=row[2],
+                resumeId=row[3]
+            ) for row in rows]
+
+    def get_applications_by_freelancer(self, freelancerId: int) -> List[models.JobApplications] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM job_applications WHERE freelancerId = ?",
+                (freelancerId,)
+            )
+            rows = cursor.fetchall()
+            return [models.JobApplications(
+                jobId=row[0],
+                freelancerId=row[1],
+                applicationDate=row[2],
+                resumeId=row[3]
+            ) for row in rows]
+
+    def delete_application(self, jobId: int, freelancerId: int) -> bool:
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM job_applications WHERE jobId = ? AND freelancerId = ?",
+                (jobId, freelancerId)
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+    def check_application_exists(self, jobId: int, freelancerId: int) -> bool:
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT 1 FROM job_applications WHERE jobId = ? AND freelancerId = ?",
+                (jobId, freelancerId)
+            )
+            return cursor.fetchone() is not None
+
+
+class ResumeHandler:
+    def create_resume(self, resume: models.Resume) -> models.Resume | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "INSERT INTO resumes (freelancerId, name, pdfData) VALUES (?, ?, ?)",
+                    (resume.freelancerId, resume.name, resume.pdfData)
+                )
+                newResumeId = cursor.lastrowid
+                connection.commit()
+                
+                if newResumeId is None:
+                    return None
+                
+                resume.resumeId = newResumeId
+                return resume
+            except sqlite3.IntegrityError:
+                return None
+
+    def get_resume(self, resumeId: int) -> models.Resume | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM resumes WHERE resumeId = ?",
+                (resumeId,)
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+            
+            return models.Resume(
+                resumeId=row[0],
+                freelancerId=row[1],
+                name=row[2],
+                pdfData=row[3]
+            )
+
+    def get_resumes_by_freelancer(self, freelancerId: int) -> List[models.Resume] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM resumes WHERE freelancerId = ?",
+                (freelancerId,)
+            )
+            rows = cursor.fetchall()
+            return [models.Resume(
+                resumeId=row[0],
+                freelancerId=row[1],
+                name=row[2],
+                pdfData=row[3]
+            ) for row in rows]
+
+    def update_resume(self, resume: models.Resume) -> models.Resume | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "UPDATE resumes SET name = ?, pdfData = ? WHERE resumeId = ?",
+                    (resume.name, resume.pdfData, resume.resumeId)
+                )
+                connection.commit()
+                return resume
+            except sqlite3.IntegrityError:
+                return None
+
+    def delete_resume(self, resumeId: int) -> bool:
+        resume = self.get_resume(resumeId)
+        if resume is None:
+            return False
+            
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM resumes WHERE resumeId = ?",
+                (resumeId,)
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+
+class RecruiterSessionHandler:
+    def create_session(self, session: models.RecruiterSession) -> models.RecruiterSession | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            try:
+                cursor.execute(
+                    "INSERT INTO recruiter_sessions (sessionId, recruiterId) VALUES (?, ?)",
+                    (session.sessionId, session.recruiterId)
+                )
+                connection.commit()
+                return session
+            except sqlite3.IntegrityError:
+                return None
+
+    def get_session(self, sessionId: str) -> models.RecruiterSession | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM recruiter_sessions WHERE sessionId = ?",
+                (sessionId,)
+            )
+            row = cursor.fetchone()
+
+            if row is None:
+                return None
+
+            return models.RecruiterSession(sessionId=row[0], recruiterId=row[1])
+
+    def delete_session(self, sessionId: str) -> bool:
+        session = self.get_session(sessionId)
+        if session is None:
+            return False
+            
+        with DB() as connection:
+            if not connection:
+                return False
+            cursor = connection.cursor()
+            cursor.execute(
+                "DELETE FROM recruiter_sessions WHERE sessionId = ?",
+                (sessionId,)
+            )
+            connection.commit()
+            return cursor.rowcount > 0
+
+    def cleanup_sessions(self) -> None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute("DELETE FROM recruiter_sessions")
+            connection.commit()
+
+def create_additional_tables():
+    with DB() as connection:
+        if not connection:
+            return None
+        cursor = connection.cursor()
+        cursor.executescript(additional_create_table_commands)
+        connection.commit()
