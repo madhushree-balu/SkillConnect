@@ -1,31 +1,44 @@
 /* Base section styling */
-#profile, #educations, #experiences, #skills {
+#profile,
+#educations,
+#experiences,
+#skills {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
     width: 100%;
-    gap: 10px;
-    margin-bottom: 40px;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
 }
 
 /* Container styling for form fields */
-section > .container > div {
+section>.container>div {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80%;
+    width: 100%;
+    max-width: 42rem;
     flex-direction: column;
-    background: #fefefe;
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: 1px solid #aaa;
+    background: var(--color-card);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+section>.container>div:hover {
+    box-shadow: var(--shadow);
 }
 
 /* Main page gap */
 #page {
-    gap: 60px;
+    gap: 4rem;
+    padding: 2rem 1rem;
+    max-width: 56rem;
+    margin: 0 auto;
 }
 
 /* Section header styling */
@@ -33,44 +46,50 @@ section > .container > div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 80%;
-    padding: 5px 5px;
+    width: 100%;
+    max-width: 42rem;
+    padding: 0 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .top h1 {
-    font-size: 30px;
-    font-weight: 800;
+    font-size: 1.875rem;
+    font-weight: 700;
     margin: 0;
-    color: #333;
+    color: var(--color-foreground);
+    letter-spacing: -0.025em;
 }
 
 /* Container for form sections */
-section > .container {
+section>.container {
     position: relative;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 20px;
+    gap: 1.5rem;
 }
 
 /* Profile section specific styling */
 #profile {
-    background: #fefefe;
-    padding: 20px;
-    border-radius: 10px;
-    border: 1px solid #aaa;
-    width: 80%;
+    background: var(--color-card);
+    padding: 2rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    width: 100%;
+    max-width: 42rem;
     margin: 0 auto;
+    box-shadow: var(--shadow-sm);
 }
 
 #profile h1 {
-    font-size: 30px;
-    font-weight: 800;
-    margin-bottom: 20px;
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
     text-align: center;
-    color: #333;
+    color: var(--color-foreground);
+    letter-spacing: -0.025em;
 }
 
 /* Name field styling */
@@ -78,26 +97,27 @@ section > .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 15px;
+    gap: 1rem;
     width: 100%;
-    margin-bottom: 15px;
     flex-wrap: wrap;
 }
 
 .nameField input {
     flex-grow: 1;
-    min-width: 200px;
-    border: 1px solid #b5b5b5;
-    border-radius: 5px;
-    padding: 8px 12px;
-    font-size: 14px;
-    transition: border-color 0.2s ease;
+    min-width: 12rem;
+    border: 1px solid var(--color-input);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    background-color: var(--color-background);
+    transition: all 0.2s ease-in-out;
+    height: 2.5rem;
 }
 
 .nameField input:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 2px hsl(222.2 84% 4.9% / 0.2);
 }
 
 /* Input field styling */
@@ -107,42 +127,46 @@ section > .container {
     justify-content: center;
     flex-direction: column;
     flex-grow: 1;
-    margin-bottom: 15px;
     width: 100%;
+    gap: 0.5rem;
 }
 
 .inputField label {
-    font-size: 14px;
-    font-weight: 600;
-    padding: 2px 2px;
-    color: #555;
-    margin-bottom: 5px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+    line-height: 1;
 }
 
-.inputField input, .inputField textarea {
-    border: 1px solid #b5b5b5;
-    border-radius: 5px;
-    padding: 8px 12px;
+.inputField input,
+.inputField textarea {
+    border: 1px solid var(--color-input);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.75rem;
     width: 100%;
-    font-size: 14px;
-    transition: border-color 0.2s ease;
-    box-sizing: border-box;
+    font-size: 0.875rem;
+    background-color: var(--color-background);
+    transition: all 0.2s ease-in-out;
+    min-height: 2.5rem;
 }
 
-.inputField input:focus, .inputField textarea:focus {
+.inputField input:focus,
+.inputField textarea:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 2px hsl(222.2 84% 4.9% / 0.2);
 }
 
 .inputField textarea {
-    min-height: 80px;
+    min-height: 5rem;
     resize: vertical;
     font-family: inherit;
+    line-height: 1.5;
 }
 
 /* Education and Experience container styling */
-.educationContainer, .experienceContainer {
+.educationContainer,
+.experienceContainer {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -153,7 +177,8 @@ section > .container {
 }
 
 /* Degree/Company and Role styling */
-.degreeMark, .companyRole {
+.degreeMark,
+.companyRole {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -162,7 +187,8 @@ section > .container {
     width: 100%;
 }
 
-.degreeMark .inputField, .companyRole .inputField {
+.degreeMark .inputField,
+.companyRole .inputField {
     flex: 1;
     min-width: 200px;
 }
@@ -181,73 +207,79 @@ section > .container {
 }
 
 /* CGPA field styling */
-.educationContainer > .inputField {
+.educationContainer>.inputField {
     align-self: flex-start;
     width: 50%;
 }
 
 /* Button styling */
 button {
-    padding: 8px 20px;
-    border: 1px solid #333;
-    border-radius: 25px;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: var(--radius);
+    font-size: 0.875rem;
     font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    height: 2.5rem;
+    padding: 0 1rem;
+    border: 1px solid var(--color-input);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
 }
 
 button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-accent);
+    color: var(--color-accent-foreground);
+}
+
+button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-ring);
 }
 
 button[id^="add"] {
-    border: 1px solid #888;
-    border-radius: 50px;
-    padding: 8px 25px;
-    background: transparent;
-    color: #333;
+    border: 1px solid hsl(299.23deg 65.54% 62.26%);
+    background-color: hsl(0deg 0% 99.58%);
+    color: var(--color-foreground);
 }
 
 button[id^="add"]:hover {
-    background: #f8f9fa;
-    border-color: #666;
+    background-color: var(--color-secondary);
+    color: var(--color-secondary-foreground);
 }
 
 button[class^="save"] {
-    background: #cbffcb;
-    border-color: #28a745;
-    color: #155724;
+    background-color: hsl(142.1deg 75.92% 85.23%);
+    color: hsl(142.1deg 77.84% 13.62%);
+    border-color: var(--color-success);
 }
 
 button[class^="save"]:hover {
-    background: #b8efb8;
-    border-color: #1e7e34;
+    background-color: hsl(142.1 76.2% 32%);
 }
 
 button[class^="remove"] {
-    background: #ffd6d6;
-    border-color: #dc3545;
-    color: #721c24;
+    background-color: hsl(0deg 88.18% 92.74%);
+    color: hsl(0deg 83.06% 34.13%);
+    border-color: var(--color-destructive);
 }
 
 button[class^="remove"]:hover {
-    background: #ffc2c2;
-    border-color: #c82333;
+    background-color: hsl(0 84.2% 55%);
 }
 
-/* Button container styling */
 .buttons {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 15px;
+    gap: 0.75rem;
     width: 100%;
-    border-top: 1px solid #cdcdcd;
-    padding-top: 15px;
-    margin-top: 10px;
+    border-top: 1px solid var(--color-border);
+    padding-top: 1rem;
+    margin-top: 1rem;
 }
 
 /* Skills section styling */
@@ -255,112 +287,140 @@ button[class^="remove"]:hover {
     align-items: center;
 }
 
-#skills .top div {
+#skills > div {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 0;
 }
 
-#skills .top input {
-    padding: 8px 12px;
-    border: 1px solid #b5b5b5;
+#skills input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid hsl(299.23deg 65.54% 62.26%);
     border-right: none;
-    border-radius: 50px 0px 0px 50px;
-    font-size: 14px;
-    min-width: 200px;
+    border-radius: var(--radius) 0 0 var(--radius);
+    font-size: 0.875rem;
+    min-width: 12rem;
+    height: 2.5rem;
+    background-color: var(--color-background);
 }
 
 #skills .top input:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 2px hsl(222.2 84% 4.9% / 0.2);
 }
 
-/* Skill field styling */
+button#addSkill {
+    border-radius: 0 var(--radius) var(--radius) 0;
+    border-left: none;
+    height: 2.5rem;
+}
+
 #skills .container .skillField {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-direction: row;
     width: fit-content;
-    gap: 20px;
-    padding: 5px 5px;
-    background: #f8f9fa;
-    border-radius: 50px;
-    border: 1px solid #6e6e6e;
+    gap: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    background-color: hsl(210deg 40% 96% / 25%);
+    border-radius: 9999px;
+    border: 1px solid var(--color-border);
 }
 
 .skillField span {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 500;
-    color: #495057;
-    padding: 0px 15px;
+    color: var(--color-secondary-foreground);
+    padding: 0 0.5rem;
 }
 
 .skillRemove button {
-    background: #ffcbd0;
-    color: #dc3545;
+    background-color: hsl(0deg 100% 89.73% / 77%);
+    color: hsl(0 84.2% 55%);
     border: none;
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
+    border: 1px solid #f00;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 8px;
+    font-weight: 600;
     padding: 0;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease-in-out;
 }
 
 .skillRemove button:hover {
-    background: #c82333;
-    transform: scale(1.1);
+    background-color: hsl(0 84.2% 55%);
+    color: #fff;
 }
 
-/* Remove button containers */
-.removeBtn, .saveButton {
-    display: flex;
-    align-items: center;
+#skills .container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 42rem;
+    gap: 0.75rem;
 }
 
 /* Responsive design */
 @media (max-width: 768px) {
-    .nameField, .degreeMark, .companyRole {
-        flex-direction: column;
+    #page {
+        padding: 1rem 0.5rem;
+        gap: 2rem;
     }
-    
-    .nameField input, .degreeMark .inputField, .companyRole .inputField {
+
+    .nameField,
+    .degreeMark,
+    .companyRole {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .nameField input,
+    .degreeMark .inputField,
+    .companyRole .inputField {
         min-width: 100%;
     }
-    
+
     .dates {
         flex-direction: column;
-        gap: 10px;
+        gap: 0.75rem;
     }
-    
+
     .top {
         flex-direction: column;
-        gap: 15px;
+        gap: 1rem;
         align-items: stretch;
     }
-    
+
     .top h1 {
         text-align: center;
+        font-size: 1.5rem;
     }
-    
+
     .buttons {
         justify-content: center;
-        gap: 10px;
+        gap: 0.5rem;
+        flex-wrap: wrap;
     }
-    
-    section > .container > div, #profile, .skillField {
-        width: 95%;
-    }
-    
-    .educationContainer > .inputField {
+
+    section>.container>div,
+    #profile {
         width: 100%;
+        padding: 1rem;
+    }
+
+    .educationContainer>.inputField {
+        width: 100%;
+    }
+
+    #skills .top input {
+        min-width: 10rem;
     }
 }
 
@@ -374,34 +434,67 @@ section:last-child {
 }
 
 /* Focus states for better accessibility */
-input:focus, textarea:focus, button:focus {
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 2px var(--color-ring);
 }
 
-/* Smooth transitions */
+/* Smooth transitions for better UX */
 * {
-    transition: all 0.2s ease;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-#skills .container {
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 80%;
+/* CSS custom properties for consistent design system */
+:root {
+    --color-background: hsl(0 0% 100%);
+    --color-foreground: hsl(222.2 84% 4.9%);
+    --color-card: hsl(0deg 0% 100% / 58%);
+    --color-card-foreground: hsl(222.2 84% 4.9%);
+    --color-primary: hsl(222.2 47.4% 11.2%);
+    --color-primary-foreground: hsl(210 40% 98%);
+    --color-secondary: hsl(210 40% 96%);
+    --color-secondary-foreground: hsl(222.2 84% 4.9%);
+    --color-muted: hsl(210 40% 96%);
+    --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+    --color-accent: hsl(210 40% 96%);
+    --color-accent-foreground: hsl(222.2 84% 4.9%);
+    --color-border: hsl(214.3 31.8% 91.4%);
+    --color-input: hsl(214.3 31.8% 91.4%);
+    --color-ring: hsl(222.2 84% 4.9%);
+    --color-destructive: hsl(0 84.2% 60.2%);
+    --color-destructive-foreground: hsl(210 40% 98%);
+    --color-success: hsl(142.1 76.2% 36.3%);
+    --color-success-foreground: hsl(355.7 100% 97.3%);
+    --radius: 0.5rem;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        "Noto Sans", sans-serif;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-input#firstName {
-    width: 100%;
+/* Improved base styling with better typography */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-button.removeSkill:hover {
-    color: #fff;
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-#skills .top > div {
-    gap: 0;
-}
 
-button#addSkill {
-    border-radius: 0px 50px 50px 0px;
+body {
+    background-color: hsla(132, 0%, 100%, 1);
+    background-image: radial-gradient(circle at 91% 11%, hsla(13, 100%, 88%, 0.66) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsla(323, 100%, 88%, 1) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsla(268, 100%, 88%, 1) 12.107536057085522%, transparent 63.33640956108327%);
+    background-blend-mode: normal, normal, normal;
 }
