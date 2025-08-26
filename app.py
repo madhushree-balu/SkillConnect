@@ -5,7 +5,7 @@ from flask import (
 import re
 from handler import db, models, utils
 
-from blueprints import api, auth, recruiter_api, recruiter_auth
+from blueprints import api, auth, recruiter_api, recruiter_auth, recruiter_dashboard
 
 app = Flask(__name__)
 app.secret_key = "My Secret Key"
@@ -22,7 +22,7 @@ def before_request():
     print(request.endpoint)
     
     # Skip authentication for static files and auth endpoints
-    if request.endpoint and re.match(r'^(auth\.|api\.|static|recruiter_auth\.|recruiter_api\.).*', request.endpoint):
+    if request.endpoint and re.match(r'^(auth\.|api\.|static|recruiter.*).*', request.endpoint):
         return
     
     # Allow access to index page
@@ -96,6 +96,7 @@ app.register_blueprint(api.api)
 app.register_blueprint(auth.auth)
 app.register_blueprint(recruiter_api.recruiter_api)
 app.register_blueprint(recruiter_auth.recruiter_auth)
+app.register_blueprint(recruiter_dashboard.recruiter_dashboard)
 
 
 if __name__ == "__main__":

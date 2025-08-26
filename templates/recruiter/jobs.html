@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Manage Jobs{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='jobs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="jobs-container">
+    <header class="jobs-header">
+        <h1>Manage Your Job Posts</h1>
+        <a href="{{ url_for('recruiter_dashboard.create_job_form') }}" class="btn btn-primary">Create New Job</a>
+    </header>
+
+    {% if jobs %}
+    <div class="jobs-list">
+        {% for job in jobs %}
+        <div class="job-item">
+            <div class="job-main">
+                <div class="job-info">
+                    <h3 class="job-title">{{ job.title }}</h3>
+                    <div class="job-details">
+                        <span class="job-location">{{ job.location or 'Remote' }}</span>
+                        <span class="job-salary">${{ "%.2f"|format(job.salary) if job.salary > 0 else 'Negotiable' }}</span>
+                        <span class="job-experience">{{ job.experience }} years exp.</span>
+                    </div>
+                    <div class="job-description">
+                        {{ job.description[:150] }}{% if job.description|length > 150 %}...{% endif %}
+                    </div>
+                    <div class="job-skills">
+                        {% for skill in job.skills %}
+                        <span class="skill-tag">{{ skill.skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="job-stats">
+                    <div class="application-count">
+                        <strong>{{ job.applicationCount }}</strong>
+                        <span>Application{{ 's' if job.applicationCount != 1 else '' }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="job-actions">
+                <a href="{{ url_for('recruiter_dashboard.job_detail', job_id=job.jobId) }}" class="btn btn-small">View Applications</a>
+                <a href="{{ url_for('recruiter_dashboard.edit_job_form', job_id=job.jobId) }}" class="btn btn-small btn-outline">Edit</a>
+                <form action="{{ url_for('recruiter_dashboard.delete_job_post', job_id=job.jobId) }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this job?')">
+                    <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-jobs">
+        <h2>No Jobs Posted Yet</h2>
+        <p>Start by creating your first job posting to attract talented freelancers.</p>
+        <a href="{{ url_for('recruiter_dashboard.create_job_form') }}" class="btn btn-primary">Create Your First Job</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

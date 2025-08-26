@@ -42,7 +42,7 @@ def login_post():
     session['recruiterEmail'] = recruiter.email
     session['recruiterSessionId'] = sessionId
 
-    return redirect(url_for('recruiter_dashboard'))
+    return redirect(url_for('recruiter_dashboard.dashboard'))
 
 
 @recruiter_auth.get('/signup')

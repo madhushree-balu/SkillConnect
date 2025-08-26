@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}{{ job.title }} - Job Details{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='recruiter_profile.js') }}"></script>
+{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='job-detail.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="job-detail-container" data-job-id="{{ job.jobId }}">
+    <header class="job-header">
+        <div class="job-title-section">
+            <h1>{{ job.title }}</h1>
+            <div class="job-meta">
+                <span class="location">{{ job.location or 'Remote' }}</span>
+                <span class="salary">${{ "%.2f"|format(job.salary) if job.salary > 0 else 'Negotiable' }}</span>
+                <span class="experience">{{ job.experience }} years experience</span>
+            </div>
+        </div>
+        <div class="job-actions">
+            <a href="{{ url_for('recruiter_dashboard.edit_job_form', job_id=job.jobId) }}" class="btn btn-primary">Edit Job</a>
+            <form action="{{ url_for('recruiter_dashboard.delete_job_post', job_id=job.jobId) }}" method="post" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this job?')">
+                <button type="submit" class="btn btn-danger">Delete Job</button>
+            </form>
+        </div>
+    </header>
+
+    <div class="job-content">
+        <div class="job-description">
+            <h2>Job Description</h2>
+            <p>{{ job.description }}</p>
+        </div>
+
+        <div class="job-skills">
+            <h3>Required Skills</h3>
+            <div class="skills-container">
+                {% for skill in job.skills %}
+                <div class="skill-tag" data-skill-id="{{ skill.skillId }}">
+                    <span>{{ skill.skill }}</span>
+                    <button class="remove-skill-btn" onclick="removeJobSkillFromDetail({{ job.jobId }}, {{ skill.skillId }}, this)">×</button>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="add-skill-section">
+                <input type="text" id="newSkillInput" placeholder="Add a skill (e.g., Python, JavaScript)">
+                <button onclick="addJobSkillFromDetail({{ job.jobId }})">Add Skill</button>
+            </div>
+            
+            {% if not job.skills %}
+            <p class="no-skills">No skills listed for this job yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="applications-section">
+        <h2>Applications ({{ job.applications|length }})</h2>
+        
+        {% if job.applications %}
+        <div class="applications-list">
+            {% for application in job.applications %}
+            <div class="application-item">
+                <div class="applicant-info">
+                    <h3 class="applicant-name">
+                        {% if application.freelancer.firstName %}
+                            {{ application.freelancer.firstName }} {{ application.freelancer.lastName or '' }}
+                        {% else %}
+                            {{ application.freelancer.username }}
+                        {% endif %}
+                    </h3>
+                    <div class="applicant-contact">
+                        <span class="username">@{{ application.freelancer.username }}</span>
+                        <span class="email">{{ application.freelancer.contactEmail or application.freelancer.email }}</span>
+                        {% if application.freelancer.phoneNumber %}
+                        <span class="phone">{{ application.freelancer.phoneNumber }}</span>
+                        {% endif %}
+                    </div>
+                    {% if application.freelancer.summary %}
+                    <div class="applicant-summary">
+                        <p>{{ application.freelancer.summary[:200] }}{% if application.freelancer.summary|length > 200 %}...{% endif %}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="application-meta">
+                    <div class="application-date">
+                        Applied: {{ application.applicationDate }}
+                    </div>
+                    <div class="application-actions">
+                        {% if application.resumeId > 0 %}
+                        <a href="{{ url_for('recruiter_dashboard.view_resume', resume_id=application.resumeId) }}" target="_blank" class="btn btn-small">View Resume</a>
+                        {% endif %}
+                        <a href="mailto:{{ application.freelancer.contactEmail or application.freelancer.email }}" class="btn btn-small btn-outline">Contact</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-applications">
+            <h3>No Applications Yet</h3>
+            <p>Your job posting is live and waiting for freelancers to apply.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="back-to-jobs">
+    <a href="{{ url_for('recruiter_dashboard.jobs') }}" class="btn btn-secondary">← Back to Jobs</a>
+</div>
+{% endblock %}

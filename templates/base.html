@@ -10,10 +10,10 @@
         <h1>SkillConnect</h1>
         <ul>
             {% if "username" in session %}
-                {% if session['userType'] == "FREELANCER" %}
-                    <li><a href="{{ url_for('profile') }}">{{ session['username'] }}</a>
-                    <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-                {% endif %}
+            
+                <li><a href="{{ url_for('profile') }}">{{ session['username'] }}</a>
+                <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+            
             {% else %}
                 <li><a href="{{ url_for('auth.login') }}">Freelancer?</a>
                 <li><a href="{{ url_for('recruiter_auth.login') }}">Recruiter?</a>

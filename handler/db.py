@@ -476,6 +476,17 @@ class UserHandler:
 
 
 class SkillHandler:
+    def get_all_skills(self) -> List[models.Skill] | None:
+        with DB() as connection:
+            if not connection:
+                return None
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT * FROM skills"
+            )
+            rows = cursor.fetchall()
+            return [models.Skill(skillId=row[0], skill=row[1]) for row in rows]
+    
     def get_skills(self) -> List[models.Skill] | None:
         with DB() as connection:
             if not connection:
