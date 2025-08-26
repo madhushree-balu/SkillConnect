@@ -10,8 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     userId INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-    user_type TEXT NOT NULL CHECK (user_type IN ('FREELANCER', 'RECRUITER'))
+    password TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sessions (
@@ -145,22 +144,26 @@ class UserHandler:
     def create_user(self, user: models.User) -> models.User | None:
         with DB() as connection:
             if not connection:
+                print("connection is none")
                 return None
             cursor = connection.cursor()
             try:
                 cursor.execute(
-                    "INSERT INTO users (username, email, password, user_type) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO users (username, email, password) VALUES (?, ?, ?)",
                     (user.username, user.email, user.password)
                 )
                 newUserId = cursor.lastrowid
                 connection.commit()
+                print("newUserId", newUserId)
                 
                 if newUserId is None:
+                    print("newUserId is None")
                     return None
                 
                 user.userId = newUserId
                 return user
             except sqlite3.IntegrityError:
+                print("Some SQL ERROR")
                 return None
 
     def get_user(self, userId: int = -1, username: str = "") -> models.User | None:
@@ -193,7 +196,7 @@ class UserHandler:
             cursor = connection.cursor()
             try:
                 cursor.execute(
-                    "UPDATE users SET username = ?, email = ?, password = ?, user_type = ? WHERE userId = ?",
+                    "UPDATE users SET username = ?, email = ?, password = ? WHERE userId = ?",
                     (user.username, user.email, user.password, user.userId)
                 )
                 connection.commit()

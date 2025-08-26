@@ -22,7 +22,7 @@ def before_request():
     print(request.endpoint)
     
     # Skip authentication for static files and auth endpoints
-    if request.endpoint and re.match(r'^(auth\.|api\.|static).*', request.endpoint):
+    if request.endpoint and re.match(r'^(auth\.|api\.|static|recruiter_auth\.|recruiter_api\.).*', request.endpoint):
         return
     
     # Allow access to index page

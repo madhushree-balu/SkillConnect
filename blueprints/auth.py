@@ -56,7 +56,6 @@ def signup_post():
     username = form.get('username')
     email = form.get('email')
     password = form.get('password')
-    userType = form.get('userType')
     
     if username is None or username == "":
         flash('Username is required', 'error')
@@ -97,6 +96,7 @@ def signup_post():
     session['userId'] = user.userId
     session['username'] = user.username
     session['sessionId'] = sessionId
+    session['userType'] = "FREELANCER"
 
     return redirect(url_for('auth.login'))
 

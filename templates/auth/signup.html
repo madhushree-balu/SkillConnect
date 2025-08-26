@@ -25,16 +25,11 @@
             </div>
             
             <div>
-                <label for="userType">User Type</label>
-                <select name="userType">
-                    <option value="FREELANCER">Freelancer</option>
-                    <option value="RECRUITER">Recruiter</option>
-                </select>
-            </div>
-            
-            <div>
                 <input type="submit" value="Sign Up">
             </div>
         </form>
+        <p>
+            Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign Up</a> as a Freelancer!
+        </p>
     </div>
 {% endblock %}

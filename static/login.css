@@ -1,14 +1,14 @@
 .container {
-    width: 300px;
-    min-height: 200px;
-    border: 1px solid #aaa;
+    width: 400px;
+    min-height: 50vh;
+    /* border: 1px solid #aaa; */
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     align-self: center;
-    gap: 10px;
+    gap: 50px;
     padding: 10px 0px;
 }
 
@@ -17,7 +17,8 @@ form {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
+    width: 260px;
 }
 
 form > div {
@@ -25,10 +26,44 @@ form > div {
     align-items: flex-start;
     justify-content: center;
     flex-direction: column;
+    width: 100%;
+    gap: 2px;
 }
 
 input {
-    padding: 3px 10px;
-    border-radius: 5px;
-    border: 1px solid #777;
+    padding: 5px 15px;
+    border-radius: 50px;
+    border: 1px solid #cbcbcb;
+    width: 100%;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 5px 25px;
+    border-radius: 50px;
+    border: none;
+    color: #ffffff;
+    background: #613aea;
+    font-size: 16px;
+    width: fit-content;
+    cursor: pointer;
+    transition: .3s;
+}
+
+p {
+    padding-top: 20px;
+    font-size: 14px;
+}
+
+#page h1 {
+    font-size: 2em;
+}
+
+input[type="submit"]:hover {
+    background: #8347ff;
 }
