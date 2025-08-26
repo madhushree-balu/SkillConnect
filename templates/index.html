@@ -1,5 +1,104 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Home</h1>
+    <body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">SkillConnect</div>
+                <ul class="nav-links">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="#login" class="btn btn-secondary">Login</a>
+                    <a href="#signup" class="btn btn-primary">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="floating-elements">
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+            <div class="floating-circle"></div>
+        </div>
+        <div class="container">
+            <h1>Connect Talent with Opportunity</h1>
+            <p>The premier platform where skilled freelancers meet forward-thinking recruiters. Build your career or find the perfect talent for your next project.</p>
+            <div class="hero-buttons">
+                <a href="#freelancer-signup" class="btn btn-primary btn-large">Join as Freelancer</a>
+                <a href="#recruiter-signup" class="btn btn-secondary btn-large">Post a Job</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose SkillConnect?</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Smart Matching</h3>
+                    <p>Our intelligent system matches freelancers with jobs based on skills, experience, and tech stack compatibility for perfect project fits.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💼</div>
+                    <h3>Easy Job Posting</h3>
+                    <p>Recruiters can quickly post detailed job listings with specific requirements, hourly rates, and experience levels in minutes.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Comprehensive Profiles</h3>
+                    <p>Freelancers showcase their education, experience, skills, and tech stack in detailed profiles that highlight their expertise.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Real-time Notifications</h3>
+                    <p>Stay updated with instant email notifications for job applications, acceptances, and important platform updates.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Quick Applications</h3>
+                    <p>Freelancers can express interest in jobs with a simple click, streamlining the application process for everyone.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Recruiter Dashboard</h3>
+                    <p>Powerful dashboard for recruiters to manage applications, review candidates, and make hiring decisions efficiently.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Get Started?</h2>
+            <p>Join thousands of freelancers and recruiters who trust SkillConnect to build successful partnerships.</p>
+            <div class="hero-buttons">
+                <a href="#get-started" class="btn btn-primary btn-large">Get Started Today</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 SkillConnect. All rights reserved. | Connecting talent with opportunity.</p>
+        </div>
+    </footer>
+    </body>
 {% endblock %}
