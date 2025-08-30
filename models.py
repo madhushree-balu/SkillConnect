@@ -1,57 +1,7 @@
-# SkillConnect
-Freelance Market Place
+import pydantic
+import typing
 
-
-## Modules
-Modules to be Implemented:
-- User Authentication & Profile Setup Module
-- Job Posting & Application System Module
-- Recruiter Dashboard & Notification System Module
-- Testing, Review, and Documentation
-
-There are two types of users. One is recruiter and the other is Freelancer. Each recruiter represent a company, and each recruiter can post jobs for a specific company.
-
-## My thoughts
-- What if two recruiters represent a same company?
-- What if a recruiter wants to represent two different comapny?
-* So, the recruiters and company should have different tables, and the are joined using another table thus froming a many to many relation. Hence, n number of recruiter can represent m number of companies.
-
-- How is the post related to the company and the recruiter?
-* The post will be created, and then a new table mapping company id, post id and recruiter id will be created. This way it would be easier to map the recruiter, company and post.
-* also, verify that the recruiter id is actually related to that company id in the many to many relation.
-* there should be an admins for the companies, to maintain proper conduct
-
-- Lets think about freelancer.
-* the will login, create a complete profile, add skills, educations, experience, and so on.
-* they should be able to search jobs, and should also get job recommendations based on their profile.
-
-- How does freelancer applying to a job work?
-* freelancer sees a post, and clicks apply. Now, in the Applications table, the postId and the freelancerId are stored, along with status (applied, seen, accepted, declined).
-
-## sum up of thoughts
-freelancer and recruiter have seperate tables to store their primary details.
-Tables: freelancers, recruiters
-
-freelancer has a to create profile
-Tables: experiences, educations, freelancerSkills
-To store skills:
-Tables: skills
-the freelancer profile is done.
-
-recruiter has to create companies.
-Tables: companies, recruiterCompanies
-the companies work is done.
-
-The recruiter has to post jobs
-Tables: jobPosts, recruiterCompanyPosts
-the posts are done.
-
-The freelancer has to apply to the post
-Tables: applications
-application process is also done.
-
-## Schema of these tables:
-```sql
+"""
 -- Recruiters Table
 CREATE TABLE IF NOT EXISTS recruiters (
     id INTEGER PRIMARY KEY AUTO INCREMENT,
@@ -109,7 +59,7 @@ CREATE TABLE IF NOT EXISTS postSkills (
 CREATE TABLE IF NOT EXISTS recruiterCompanyPosts (
     recruiterId INTEGER NOT NULL,
     companyId INTEGER NOT NULL,
-    postId INTEGER UNIQUE NOT NULL,
+    postId INTEGER NOT NULL,
     PRIMARY KEY (recruiterId, companyId, postId),
     FOREIGN KEY (recruiterId) REFERENCES recruiters(id) ON CASCADE DELETE,
     FOREIGN KEY (companyId) REFERENCES companies(id) ON CASCADE DELETE,
@@ -180,4 +130,101 @@ CREATE TABLE IF NOT EXISTS applications (
     FOREIGN KEY (postId) REFERENCES jobPosts(id) ON CASCADE DELETE,
     FOREIGN KEY (freelancerId) REFERENCES freelancers(id) ON CASCADE DELETE
 );
-```
+"""
+
+class Recruiter(pydantic.BaseModel):
+    id: int
+    username: str
+    email: str
+    password: str
+
+class Company(pydantic.BaseModel):
+    id: int
+    username: str
+    companyName: str
+    companyPhone: str
+    companyAddress: str
+    companyDescription: str
+    employeeSize: int
+    
+class JobPost(pydantic.BaseModel):
+    id: int
+    title: str
+    description: str
+    experience: int
+    jobType: str
+    location: str
+    salary: float
+
+class Skill(pydantic.BaseModel):
+    id: int
+    skill: str
+
+class PostSkill(pydantic.BaseModel):
+    postId: int
+    skillId: int
+
+
+class RecruiterCompany(pydantic.BaseModel):
+    recruiterId: int
+    companyId: int
+    role: str = "RECRUITER"
+
+class RecruiterCompanyPost(pydantic.BaseModel):
+    recruiterId: int
+    companyId: int
+    postId: int
+    postedOn: str
+    validTill: str
+
+class Freelancer(pydantic.BaseModel):
+    id: int
+    username: str
+    email: str
+    password: str
+
+class FreelancerDetails(pydantic.BaseModel):
+    freelancerId: int
+    firstName: str
+    middleName: str
+    lastName: str
+    phoneNumber: str
+    contactEmail: str
+    about: str
+    dateOfBirth: str
+
+class Education(pydantic.BaseModel):
+    id: int
+    freelancerId: int
+    course: str
+    degree: str
+    school: str
+    startDate: str
+    endDate: str
+    cgpa: float
+
+class Experience(pydantic.BaseModel):
+    id: int
+    freelancerId: int
+    companyName: str
+    startDate: str
+    endDate: str
+    description: str
+    role: str
+
+class FreelancerSkill(pydantic.BaseModel):
+    freelancerId: int
+    skillId: int
+
+class Application(pydantic.BaseModel):
+    jobPostId: int
+    freelancerId: int
+    status: str
+    appliedOn: str
+    resumeId: int
+
+class Resume(pydantic.BaseModel):
+    id: int
+    freelancerId: int
+    name: str
+    pdfData: bytes
