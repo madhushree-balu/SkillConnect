@@ -1,5 +1,5 @@
 import sqlite3
-from sql_commands import createTable, createIndexes
+from db.sql_commands import createTable, createIndexes
 
 
 def create_database():

@@ -1,7 +1,7 @@
 import pydantic
 import typing
 import sqlite3
-from sql_commands import *
+from db.sql_commands import *
 from datetime import datetime
 from typing import Optional
 

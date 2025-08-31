@@ -3,8 +3,8 @@ import sqlite3
 import os
 import tempfile
 from datetime import datetime, timedelta
-from models import *
-from database_setup import create_database, drop_all_tables
+from db.models import *
+from db.database_setup import create_database, drop_all_tables
 
 
 class TestDatabaseSetup(unittest.TestCase):
