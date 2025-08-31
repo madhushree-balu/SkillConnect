@@ -46,6 +46,19 @@ createTable = {
         updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );""",
     
+    "FreelancerDetails": """
+    CREATE TABLE IF NOT EXISTS FreelancerDetails (
+        freelancerId INTEGER NOT NULL PRIMARY KEY,
+        firstName VARCHAR(255),
+        middleName VARCHAR(255),
+        lastName VARCHAR(255),
+        phoneNumber VARCHAR(20),
+        contactEmail VARCHAR(255),
+        about TEXT,
+        dateOfBirth DATE,
+        FOREIGN KEY(freelancerId) REFERENCES Freelancers(id) ON DELETE CASCADE
+    );""",
+    
     "Companies": """
     CREATE TABLE IF NOT EXISTS Companies (
         id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,

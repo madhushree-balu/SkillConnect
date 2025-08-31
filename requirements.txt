@@ -1,5 +1,3 @@
 pydantic
 flask
-tortoise
-tortoise-orm
-aiosqlite
+flask-jwt-extended

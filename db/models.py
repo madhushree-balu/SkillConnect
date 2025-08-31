@@ -185,6 +185,18 @@ class Freelancers(DataModel):
     password: str
 
 
+class FreelancerDetails(DataModel):
+    freelancerId: int
+    firstName: str
+    middleName: str
+    lastName: str
+    phoneNumber: str
+    contactEmail: str
+    about: str
+    dateOfBirth: str
+    address: str
+
+
 class Experiences(DataModel):
     freelancerId: int
     companyName: str
