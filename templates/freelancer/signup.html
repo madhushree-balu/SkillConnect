@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer Signup</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Freelancer Signup</h1>
+        <form id="signupForm">
+            <h3>Account Information</h3>
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password (min 8 characters)" required>
+            </div>
+
+            <h3>Personal Details</h3>
+            <div>
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" name="firstName" placeholder="Enter your first name">
+            </div>
+
+            <div>
+                <label for="middleName">Middle Name</label>
+                <input type="text" id="middleName" name="middleName" placeholder="Enter your middle name">
+            </div>
+
+            <div>
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" name="lastName" placeholder="Enter your last name">
+            </div>
+
+            <div>
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number">
+            </div>
+
+            <div>
+                <label for="contactEmail">Contact Email</label>
+                <input type="email" id="contactEmail" name="contactEmail" placeholder="Enter your contact email">
+            </div>
+
+            <div>
+                <label for="dateOfBirth">Date of Birth</label>
+                <input type="date" id="dateOfBirth" name="dateOfBirth">
+            </div>
+
+            <div>
+                <label for="address">Address</label>
+                <textarea id="address" name="address" placeholder="Enter your address" rows="2"></textarea>
+            </div>
+
+            <div>
+                <label for="about">About</label>
+                <textarea id="about" name="about" placeholder="Tell us about yourself" rows="3"></textarea>
+            </div>
+
+            <div>
+                <input type="submit" value="Sign Up">
+            </div>
+        </form>
+        
+        <div id="message" style="margin-top: 10px;"></div>
+        
+        <p>
+            Already have an account? <a href="{{ url_for('freelancer.login') }}">Login</a> as a Freelancer!
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const firstName = document.getElementById('firstName').value;
+            const middleName = document.getElementById('middleName').value;
+            const lastName = document.getElementById('lastName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            const about = document.getElementById('about').value;
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const address = document.getElementById('address').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Clear previous messages
+            messageDiv.innerHTML = '';
+            
+            // Basic client-side validation
+            if (password.length < 8) {
+                messageDiv.innerHTML = '<p style="color: red;">Password must be at least 8 characters long.</p>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('{{ url_for("freelancer_api.signup") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        firstName: firstName,
+                        middleName: middleName,
+                        lastName: lastName,
+                        phoneNumber: phoneNumber,
+                        contactEmail: contactEmail,
+                        about: about,
+                        dateOfBirth: dateOfBirth,
+                        address: address
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<p style="color: green;">' + data.message + '</p>';
+                    // Redirect to freelancer dashboard or home page
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for("freelancer.index") }}';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<p style="color: red;">' + data.error + '</p>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<p style="color: red;">An error occurred. Please try again.</p>';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

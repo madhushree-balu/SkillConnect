@@ -40,17 +40,17 @@ def index():
     companies = models.RecruiterCompanies.getAll(recruiterId=recruiter.id)
     posts = models.JobPosts.getAll(recruiterId=recruiter.id)
     
-    return render_template("recruiter.html", recruiter=recruiter, companies=companies, posts=posts)
+    return render_template("/recruiter/index.html", recruiter=recruiter, companies=companies, posts=posts)
 
 
 @recruiter.get("/login")
 def login():
-    return render_template("login.html")
+    return render_template("/recruiter/login.html")
 
 
 @recruiter.get("/signup")
 def signup():
-    return render_template("signup.html")
+    return render_template("/recruiter/signup.html")
 
 @recruiter.get("/company/create")
 @jwt_required()
@@ -61,7 +61,7 @@ def create_company():
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401
     
-    return render_template("create_company.html")
+    return render_template("/recruiter/create_company.html")
 
 @recruiter.get("/company/<id>")
 @jwt_required()
@@ -72,7 +72,7 @@ def company(id):
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401 
     
-    return render_template("company.html")
+    return render_template("/recruiter/company.html")
 
 
 @recruiter.get("/post/create")
@@ -84,7 +84,7 @@ def create_post():
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401
     
-    return render_template("create_post.html")
+    return render_template("/recruiter/create_post.html")
 
 
 @recruiter.get("/post/<id>")
@@ -101,4 +101,4 @@ def post(id):
     if not post:
         return jsonify({"error": "Post not found"}), 404
     
-    return render_template("post.html", post=post)
+    return render_template("/recruiter/post.html", post=post)

@@ -5,6 +5,7 @@ insertQueries = {
     "Freelancers": "INSERT INTO Freelancers (username, email, password) VALUES (?, ?, ?)",
     "Companies": "INSERT INTO Companies (username, companyName, companyPhone, companyAddress, companyDescription, employeeSize) VALUES (?, ?, ?, ?, ?, ?)",
     "Skills": "INSERT INTO Skills (skill) VALUES (?)",
+    "FreelancerDetails": "INSERT INTO FreelancerDetails (freelancerId, firstName, middleName, lastName, phoneNumber, contactEmail, about, dateOfBirth, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
     
     # JobPosts - exclude postedOn (auto-set)
     "JobPosts": "INSERT INTO JobPosts (recruiterId, companyId, title, description, experience, jobType, location, salary, validTill, isActive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -48,7 +49,8 @@ createTable = {
     
     "FreelancerDetails": """
     CREATE TABLE IF NOT EXISTS FreelancerDetails (
-        freelancerId INTEGER NOT NULL PRIMARY KEY,
+        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+        freelancerId INTEGER NOT NULL UNIQUE,
         firstName VARCHAR(255),
         middleName VARCHAR(255),
         lastName VARCHAR(255),
@@ -56,6 +58,7 @@ createTable = {
         contactEmail VARCHAR(255),
         about TEXT,
         dateOfBirth DATE,
+        address TEXT,
         FOREIGN KEY(freelancerId) REFERENCES Freelancers(id) ON DELETE CASCADE
     );""",
     

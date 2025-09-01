@@ -32,7 +32,8 @@ def create_database():
             "PostSkills",
             "RecruiterCompanies", 
             "FreelancerSkills",
-            "Applications"
+            "Applications",
+            "FreelancerDetails"
         ]
         
         # Create tables in proper order

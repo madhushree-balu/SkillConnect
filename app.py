@@ -6,6 +6,8 @@ from flask_jwt_extended import JWTManager
 
 from blueprints.recruiter_api import recruiter_api
 from blueprints.freelancer_api import freelancer_api
+from blueprints.recruiter import recruiter
+from blueprints.freelancer import freelancer
 
 def create_app():
     app = Flask(__name__)
@@ -25,6 +27,9 @@ def create_app():
     # Register blueprint
     app.register_blueprint(recruiter_api, url_prefix="/api/recruiter")
     app.register_blueprint(freelancer_api, url_prefix="/api/freelancer")
+    
+    app.register_blueprint(recruiter, url_prefix="/recruiter")
+    app.register_blueprint(freelancer, url_prefix="/freelancer")
     
     return app
 

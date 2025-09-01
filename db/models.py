@@ -73,7 +73,8 @@ class BaseModel(pydantic.BaseModel):
         if not data:
             return None
         
-        return cls(**dict(data))
+        a = cls(**dict(data))
+        return a
 
     @classmethod
     def getAll(cls, **kwargs):

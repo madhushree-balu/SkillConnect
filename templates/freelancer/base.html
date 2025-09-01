@@ -1,0 +1,29 @@
+<!doctype html>
+
+<head>
+    <title>{% block title %}{% endblock %} - Skill Connect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <h1>Hello @{{ current_user.username }}</h1>
+        <ul>
+            <li><a href="">Home</a>
+            <li><a href="">Jobs</a>
+            <li><a href="">Profile</a>
+        </ul>
+    </nav>
+    
+    <div id="notifications">
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <section id="page">
+        {% block content %}{% endblock %}
+    </section>
+</body>
+{% block scripts %}{% endblock %}
+</html>

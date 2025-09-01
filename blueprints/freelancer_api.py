@@ -67,14 +67,14 @@ def signup():
     freelancer = models.Freelancers.get(id=fId)
     freelancerDetail = models.FreelancerDetails(
         freelancerId=fId,
-        firstName=data.get("firstName"),
-        middleName=data.get("middleName"),
-        lastName=data.get("lastName"),
-        phoneNumber=data.get("phoneNumber"),
-        contactEmail=data.get("contactEmail"),
-        about=data.get("about"),
-        dateOfBirth=data.get("dateOfBirth"),
-        address=data.get("address")
+        firstName=data.get("firstName", ""),
+        middleName=data.get("middleName", ""),
+        lastName=data.get("lastName", ""),
+        phoneNumber=data.get("phoneNumber", ""),
+        contactEmail=data.get("contactEmail", ""),
+        about=data.get("about", ""),
+        dateOfBirth=data.get("dateOfBirth", ""),
+        address=data.get("address", "")
     )
     fdId = freelancerDetail.insert()
     
@@ -85,7 +85,13 @@ def signup():
         freelancer.delete()
         return jsonify({"error": "Signup failed"}), 500
     
-    return jsonify({"message": "Signup successful"}), 200
+    access_token = create_access_token(identity=f"{freelancer.id},freelancer")
+    response = jsonify({
+        "message": "Signup successful",
+    })
+    set_access_cookies(response, access_token)
+    
+    return response, 200
 
 
 @freelancer_api.route("/logout", methods=["POST"])
@@ -123,6 +129,8 @@ def index():
 def profile():
     cookie = get_jwt_identity()
     id, role = cookie.split(',')
+    id = int(id)
+    print(cookie)
     
     if role != "freelancer":
         return jsonify({"error": "Unauthorized"}), 401
@@ -133,6 +141,33 @@ def profile():
     experiences = models.Experiences.getAll(freelancerId=id)
     rawSkills = models.FreelancerSkills.getAll(freelancerId=id)
     skills = []
+    
+    if not freelancer:
+        print("no freelancer")
+        return jsonify({"error": "Unauthorized"}), 401
+    else:
+        freelancer = freelancer.model_dump()
+    
+    if freelancerDetails is None:
+        print("no freelancer details")
+        return jsonify({"error": "Unauthorized"}), 401
+    else:
+        freelancerDetails = freelancerDetails.model_dump()
+    
+    if educations:
+        educations = [edu.model_dump() for edu in educations]
+    else:
+        educations = []
+        
+    if experiences:
+        experiences = [exp.model_dump() for exp in experiences]
+    else:
+        experiences = []
+        
+    if rawSkills:
+        rawSkills = [skill.model_dump() for skill in rawSkills]
+    else:
+        rawSkills = []
     
     for skill in rawSkills:
         skills.append({"skill": models.Skills.get(id=skill["skillId"]), "proficiencyLevel": skill["proficiencyLevel"], "yearsOfExperience": skill["yearsOfExperience"]})
@@ -145,12 +180,19 @@ def profile():
 def update_freelancer_details():
     cookie = get_jwt_identity()
     id, role = cookie.split(',')
-    
+    id = int(id)
+    print(cookie)
     if role != "freelancer":
         return jsonify({"error": "Unauthorized"}), 401
     
     data = request.get_json()
+    oldDetails = models.FreelancerDetails.get(freelancerId=id)
+    print(oldDetails)
+    if not oldDetails:
+        print("no old details")
+        return jsonify({"error": "Profile update failed"}), 500
     freelancerDetails = models.FreelancerDetails(
+        id=oldDetails.id,
         freelancerId=id,
         firstName = data.get("firstName"),
         middleName = data.get("middleName"),
@@ -162,8 +204,7 @@ def update_freelancer_details():
         address = data.get("address"),
     )
     updated = freelancerDetails.update()
-    
-    if not updated:
+    if updated is None:
         return jsonify({"error": "Profile update failed"}), 500
     
     return jsonify({"message": "Profile updated"}), 200
@@ -227,12 +268,12 @@ def add_freelancer_education():
     data = request.get_json()
     education = models.Educations(
         freelancerId=id,
-        school = data.get("school"),
-        degree = data.get("degree"),
-        startDate = data.get("startDate"),
-        endDate = data.get("endDate"),
-        cgpa = data.get("cgpa"),
-        course = data.get("course")
+        school = "",
+        degree = "",
+        startDate = "",
+        endDate = "",
+        cgpa = 0.0,
+        course = ""
     )
     added = education.insert()
     
@@ -259,7 +300,7 @@ def delete_freelancer_education():
     
     deleted = education.delete()
     
-    if not deleted:
+    if deleted is None:
         return jsonify({"error": "Education delete failed"}), 500
     
     return jsonify({"message": "Education deleted"}), 200
@@ -284,11 +325,11 @@ def update_freelancer_education():
     education.degree = data.get("degree")
     education.startDate = data.get("startDate")
     education.endDate = data.get("endDate")
-    education.cgpa = data.get("cgpa")
+    education.cgpa = float(data.get("cgpa", 0.0))
     education.course = data.get("course")
     updated = education.update()
     
-    if not updated:
+    if updated is None:
         return jsonify({"error": "Education update failed"}), 500
     
     return jsonify({"message": "Education updated"}), 200
@@ -314,7 +355,7 @@ def add_freelancer_experience():
     )
     added = experience.insert()
     
-    if not added:
+    if added is None:
         return jsonify({"error": "Experience add failed"}), 500
     
     return jsonify({"message": "Experience added"}), 200

@@ -24,13 +24,12 @@ def index():
     cookie = get_jwt_identity()
     if not cookie:
         print("no cookie")
-        return jsonify({"error": "Unauthorized"}), 401
+        return redirect(url_for("freelancer.login"))
     
     fid = int(cookie.split(',')[0])
     
     if cookie.split(',')[-1] != "freelancer":
-        print("no freelancer")
-        return jsonify({"error": "Unauthorized"}), 401
+        return redirect(url_for("freelancer.login"))
     
     freelancer = models.Freelancers.get(id=fid)
     
@@ -48,7 +47,7 @@ def index():
         skills.append({"skill": models.Skills.get(id=skill["skillId"]), "proficiencyLevel": skill["proficiencyLevel"], "yearsOfExperience": skill["yearsOfExperience"]})
     
     return render_template(
-        "freelancer.html", freelancer=freelancer, 
+        "/freelancer/index.html", freelancer=freelancer, 
         freelancerDetails=freelancerDetail, 
         educations=educations, experiences=experiences, 
         skills=skills
@@ -57,9 +56,14 @@ def index():
 
 @freelancer.get("/login")
 def login():
-    return render_template("login.html")
+    return render_template("/freelancer/login.html")
 
 
 @freelancer.get("/signup")
 def signup():
-    return render_template("signup.html")
+    return render_template("/freelancer/signup.html")
+
+@freelancer.get("/profile")
+@jwt_required()
+def profile():
+    return render_template("/freelancer/profile.html")
