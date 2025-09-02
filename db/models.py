@@ -177,8 +177,85 @@ class JobPosts(DataModel):
 
 class Skills(DataModel):
     skill: str
-    # Inherits id, createdAt, updatedAt from DataModel
 
+    @classmethod
+    def get_or_create(cls, skill: str):
+        """
+        Get an existing skill by name, or create it if it doesn't exist.
+        
+        Args:
+            skill (str): The skill name to search for or create
+            
+        Returns:
+            Skills: The existing or newly created Skills instance
+        """
+        # First, try to get the existing skill (case-insensitive search)
+        existing_skill = cls.get(skill=skill)
+        
+        if existing_skill:
+            return existing_skill
+        
+        # If skill doesn't exist, create a new one
+        new_skill = cls(skill=skill)
+        skill_id = new_skill.insert()
+        
+        if skill_id:
+            # Return the newly created skill with the ID
+            new_skill.id = skill_id
+            return new_skill
+        else:
+            # If insertion failed, return None or raise an exception
+            raise Exception(f"Failed to create skill: {skill}")
+
+    @classmethod
+    def get_by_name(cls, skill_name: str):
+        """
+        Get a skill by its name (case-insensitive).
+        
+        Args:
+            skill_name (str): The skill name to search for
+            
+        Returns:
+            Skills or None: The Skills instance if found, None otherwise
+        """
+        data = fetch(
+            "SELECT * FROM Skills WHERE LOWER(skill) = LOWER(?)",
+            (skill_name,),
+            one=True
+        )
+        
+        if not data:
+            return None
+            
+        return cls(**dict(data))
+
+    @classmethod
+    def search_skills(cls, search_term: str, limit: int = 10):
+        """
+        Search for skills containing the search term.
+        
+        Args:
+            search_term (str): The term to search for in skill names
+            limit (int): Maximum number of results to return
+            
+        Returns:
+            List[Skills]: List of matching Skills instances
+        """
+        data = fetch(
+            "SELECT * FROM Skills WHERE skill LIKE ? ORDER BY skill LIMIT ?",
+            (f"%{search_term}%", limit)
+        )
+        
+        if not data:
+            return []
+            
+        return [cls(**dict(row)) for row in data]
+
+    def __str__(self):
+        return f"Skill(id={self.id}, skill='{self.skill}')"
+
+    def __repr__(self):
+        return self.__str__()
 
 class Freelancers(DataModel):
     username: str

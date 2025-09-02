@@ -7,30 +7,30 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Recruiter Dashboard</h1>
-
-    <div class="header">
-        <div class="actions">
-            <a href="/recruiter/company/create" class="btn btn-primary">Create New Company</a>
-            <a href="/recruiter/post/create" class="btn btn-success">Create New Post</a>
-            <button onclick="logout()" class="btn btn-danger">Logout</button>
-        </div>
-    </div>
-
     <!-- Companies Section -->
     <section id="companies">
         <h2>My Companies</h2>
         <div class="container" id="companiesContainer">
-            {% for company in companies %}
-                <a href="/recruiter/company/{{ company.id }}">
-                    <div class="company">
-                        <h3>{{ company.companyName }}</h3>
-                        <p>{{ company.companyDescription }}</p>
-                        <p>{{ company.companyPhone }}</p>
-                        <p>{{ company.companyAddress }}</p>
-                    </div>
-                </a>
-            {% endfor %}
+            <div class="company">
+                <div>
+                    <span>username:</span><span class="value">{{ company.username }}</span>
+                </div>
+                <div>
+                    <span>companyName:</span><span class="value">{{ company.companyName }}</span>
+                </div>
+                <div>
+                    <span>companyPhone:</span><span class="value">{{ company.companyPhone }}</span>
+                </div>
+                <div>
+                    <span>companyAddress:</span><span class="value">{{ company.companyAddress }}</span>
+                </div>
+                <div>
+                    <span>companyDescription:</span><span class="value">{{ company.companyDescription }}</span>
+                </div>
+                <div>
+                    <span>employeeSize:</span><span class="value">{{ company.employeeSize }}</span>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -39,7 +39,7 @@
         <h2>My Job Posts</h2>
         <div class="container" id="postsContainer">
             {% for post in posts %}
-                <a href="/recruiter/post/{{ post.id }}">
+                <a href="/recruiter/post/{{ post.postId }}">
                     <div class="post">
                         <h3>{{ post.title }}</h3>
                         <p>{{ post.description }}</p>

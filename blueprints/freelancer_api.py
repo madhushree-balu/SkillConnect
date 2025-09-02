@@ -45,7 +45,7 @@ def signup():
     email = data.get("email")
     password = data.get("password")
     
-    if not username or not email or not password:
+    if username is None or not email or not password:
         return jsonify({"error": "Missing required fields"}), 400
     
     if models.Freelancers.get(username=username):
@@ -61,7 +61,7 @@ def signup():
     freelancer = models.Freelancers(username=username, email=email, password=hashed_password)
     fId = freelancer.insert()
     
-    if not fId:
+    if fId is None:
         return jsonify({"error": "Signup failed"}), 500
     
     freelancer = models.Freelancers.get(id=fId)
@@ -78,10 +78,10 @@ def signup():
     )
     fdId = freelancerDetail.insert()
     
-    if not freelancer:
+    if freelancer is None:
         return jsonify({"error": "Signup failed"}), 500
     
-    if not fdId:
+    if fdId is None:
         freelancer.delete()
         return jsonify({"error": "Signup failed"}), 500
     
@@ -107,7 +107,7 @@ def logout():
 def index():
     # get current user
     cookie = get_jwt_identity()
-    if not cookie:
+    if cookie is None:
         print("no cookie")
         return jsonify({"error": "Unauthorized"}), 401
     
@@ -117,7 +117,7 @@ def index():
     
     freelancer = models.Freelancers.get(id=int(cookie.split(',')[0]))
     print(cookie)
-    if not freelancer:
+    if freelancer is None:
         print("no get freelancer")
         return jsonify({"error": "Unauthorized"}), 401
     
@@ -142,7 +142,7 @@ def profile():
     rawSkills = models.FreelancerSkills.getAll(freelancerId=id)
     skills = []
     
-    if not freelancer:
+    if freelancer is None:
         print("no freelancer")
         return jsonify({"error": "Unauthorized"}), 401
     else:
@@ -170,7 +170,9 @@ def profile():
         rawSkills = []
     
     for skill in rawSkills:
-        skills.append({"skill": models.Skills.get(id=skill["skillId"]), "proficiencyLevel": skill["proficiencyLevel"], "yearsOfExperience": skill["yearsOfExperience"]})
+        skillClass = models.Skills.get(id=skill["skillId"])
+        if skillClass is not None:
+            skills.append({"skill": skillClass.model_dump(), "proficiencyLevel": skill["proficiencyLevel"], "yearsOfExperience": skill["yearsOfExperience"]})
     
     return jsonify({"freelancer": freelancer, "freelancerDetails": freelancerDetails, "educations": educations, "experiences": experiences, "skills": skills}), 200
 
@@ -188,7 +190,7 @@ def update_freelancer_details():
     data = request.get_json()
     oldDetails = models.FreelancerDetails.get(freelancerId=id)
     print(oldDetails)
-    if not oldDetails:
+    if oldDetails is None:
         print("no old details")
         return jsonify({"error": "Profile update failed"}), 500
     freelancerDetails = models.FreelancerDetails(
@@ -220,15 +222,24 @@ def add_freelancer_skill():
         return jsonify({"error": "Unauthorized"}), 401
     
     data = request.get_json()
+    print(data)
+    skill = data.get("skillName")
+    print(skill)
+    skillClass = models.Skills.get_or_create(skill)
+    if skillClass is None:
+        return jsonify({"error": "Skill add failed"}), 500
+    
+    skillId = skillClass.id
+    
     freelancerSkill = models.FreelancerSkills(
         freelancerId=id,
-        skillId = data.get("skillId"),
+        skillId = skillId,
         proficiencyLevel = data.get("proficiencyLevel"),
         yearsOfExperience = data.get("yearsOfExperience")
     )
     added = freelancerSkill.insert()
     
-    if not added:
+    if added is None:
         return jsonify({"error": "Skill add failed"}), 500
     
     return jsonify({"message": "Skill added"}), 200
@@ -245,12 +256,12 @@ def delete_freelancer_skill():
     
     data = request.get_json()
     freelancerSkill = models.FreelancerSkills(
-        freelancerId=id,
-        skillId = data.get("skillId")
+        freelancerId=int(id),
+        skillId = int(data.get("skillId"))
     )
-    deleted = freelancerSkill.delete()
+    deleted = freelancerSkill.delete(freelancerId=int(id), skillId=int(data.get("skillId")))
     
-    if not deleted:
+    if deleted is None:
         return jsonify({"error": "Skill delete failed"}), 500
     
     return jsonify({"message": "Skill deleted"}), 200
@@ -277,7 +288,7 @@ def add_freelancer_education():
     )
     added = education.insert()
     
-    if not added:
+    if added is None:
         return jsonify({"error": "Education add failed"}), 500
     
     return jsonify({"message": "Education added"}), 200
@@ -295,7 +306,7 @@ def delete_freelancer_education():
     data = request.get_json()
     education = models.Educations.get(id=data.get("id"))
     
-    if not education:
+    if education is None:
         return jsonify({"error": "Education not found"}), 404
     
     deleted = education.delete()
@@ -318,7 +329,7 @@ def update_freelancer_education():
     data = request.get_json()
     education = models.Educations.get(id=data.get("id"))
     
-    if not education:
+    if education is None:
         return jsonify({"error": "Education not found"}), 404
     
     education.school = data.get("school")
@@ -373,12 +384,12 @@ def delete_freelancer_experience():
     data = request.get_json()
     experience = models.Experiences.get(id=data.get("id"))
     
-    if not experience:
+    if experience is None:
         return jsonify({"error": "Experience not found"}), 404
     
     deleted = experience.delete()
     
-    if not deleted:
+    if deleted is None:
         return jsonify({"error": "Experience delete failed"}), 500
     
     return jsonify({"message": "Experience deleted"}), 200
@@ -396,7 +407,7 @@ def update_freelancer_experience():
     data = request.get_json()
     experience = models.Experiences.get(id=data.get("id"))
     
-    if not experience:
+    if experience is None:
         return jsonify({"error": "Experience not found"}), 404
     
     experience.companyName = data.get("company")
@@ -406,7 +417,7 @@ def update_freelancer_experience():
     experience.description = data.get("description")
     updated = experience.update()
     
-    if not updated:
+    if updated is None:
         return jsonify({"error": "Experience update failed"}), 500
     
     return jsonify({"message": "Experience updated"}), 200

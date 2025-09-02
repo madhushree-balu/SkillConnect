@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Job Post</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+</head>
+<body>
+    <h1>Create New Job Post</h1>
+
+    <section id="createPost">
+        <h2>Job Post Details</h2>
+        
+        <div class="inputField">
+            <label for="companyId">Company:</label>
+            <select name="companyId" id="companyId" required>
+                <option value="">Select Company</option>
+                {% for company in companies %}
+                    <option value="{{ company.id }}">{{ company.companyName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="inputField">
+            <label for="title">Job Title:</label>
+            <input type="text" name="title" id="title" placeholder="Job Title">
+        </div>
+
+        <div class="inputField">
+            <label for="description">Job Description:</label>
+            <textarea name="description" id="description" placeholder="Job Description"></textarea>
+        </div>
+        <div class="inputField">
+            <label for="skills">Skills Required:</label>
+            <textarea name="skills" id="skills" placeholder="Skill1, Skill2, Skill3..."></textarea>
+        </div>
+
+        <div class="inputField">
+            <label for="experience">Experience Required (years):</label>
+            <input type="number" name="experience" id="experience" placeholder="Years of Experience" min="0">
+        </div>
+
+        <div class="inputField">
+            <label for="jobType">Job Type:</label>
+            <select name="jobType" id="jobType">
+                <option value="">Select Job Type</option>
+                <option value="FULL_TIME">Full Time</option>
+                <option value="PART_TIME">Part Time</option>
+                <option value="CONTRACT">Contract</option>
+                <option value="INTERNSHIP">Internship</option>
+                <option value="FREELANCE">Freelance</option>
+            </select>
+        </div>
+
+        <div class="inputField">
+            <label for="location">Location:</label>
+            <input type="text" name="location" id="location" placeholder="Job Location">
+        </div>
+
+        <div class="inputField">
+            <label for="salary">Salary:</label>
+            <input type="number" name="salary" id="salary" placeholder="Salary" step="0.01" min="0">
+        </div>
+
+        <div class="inputField">
+            <label for="validTill">Valid Till:</label>
+            <input type="date" name="validTill" id="validTill">
+        </div>
+
+        <div class="inputField">
+            <label for="isActive">Status:</label>
+            <select name="isActive" id="isActive">
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+
+        <div class="buttons">
+            <button onclick="createPost()" class="btn-primary">Create Job Post</button>
+            <button onclick="goBack()" class="btn-secondary">Cancel</button>
+        </div>
+    </section>
+
+    <script>
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+
+        window.onload = function() {
+
+        };
+
+        function createPost() {
+            const companyId = document.getElementById('companyId').value;
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const experience = document.getElementById('experience').value;
+            const jobType = document.getElementById('jobType').value;
+            const location = document.getElementById('location').value.trim();
+            const salary = document.getElementById('salary').value;
+            const validTill = document.getElementById('validTill').value;
+            const isActive = document.getElementById('isActive').value === 'true';
+            const skills = document.getElementById('skills').value.trim();
+
+            // Validation
+            if (!companyId || !title || !description || !experience || !jobType || !location || !salary || !validTill) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (parseInt(experience) < 0) {
+                alert('Experience cannot be negative');
+                return;
+            }
+
+            if (parseFloat(salary) <= 0) {
+                alert('Salary must be greater than 0');
+                return;
+            }
+
+            // Check if validTill is in the future
+            const validTillDate = new Date(validTill);
+            const today = new Date();
+            if (validTillDate <= today) {
+                alert('Valid till date must be in the future');
+                return;
+            }
+
+            fetch("/api/recruiter/posts", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token")
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    companyId: parseInt(companyId),
+                    title: title,
+                    description: description,
+                    experience: parseInt(experience),
+                    jobType: jobType,
+                    location: location,
+                    salary: parseFloat(salary),
+                    validTill: validTill,
+                    isActive: isActive,
+                    skills: skills
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Job post created successfully!');
+                    window.location.href = '/recruiter/';
+                } else {
+                    alert(data.error || 'Failed to create job post');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to create job post');
+            });
+        }
+
+        function goBack() {
+            window.location.href = '/recruiter/';
+        }
+
+        // Add Enter key support for inputs (but not textareas)
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter') {
+                        createPost();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

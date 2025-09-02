@@ -37,9 +37,16 @@ def index():
         print("no get recruiter")
         return jsonify({"error": "Unauthorized"}), 401
     
-    companies = models.RecruiterCompanies.getAll(recruiterId=recruiter.id)
+    recruiterCompanies = models.RecruiterCompanies.getAll(recruiterId=recruiter.id)
+    companies = []
+    
+    for i in recruiterCompanies:
+        company = models.Companies.get(id=i.companyId)
+        companies.append(company)
+    
     posts = models.JobPosts.getAll(recruiterId=recruiter.id)
     
+    print(companies)
     return render_template("/recruiter/index.html", recruiter=recruiter, companies=companies, posts=posts)
 
 
@@ -52,6 +59,21 @@ def login():
 def signup():
     return render_template("/recruiter/signup.html")
 
+
+@recruiter.get("/profile")
+@jwt_required()
+def profile():
+    cookie = get_jwt_identity()
+    id, role = cookie.split(',')
+    
+    if role != "recruiter":
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    recruiterModel = models.Recruiters.get(id=id)
+    
+    return render_template("/recruiter/profile.html", recruiter=recruiterModel)
+
+
 @recruiter.get("/company/create")
 @jwt_required()
 def create_company():
@@ -60,6 +82,7 @@ def create_company():
     
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401
+    
     
     return render_template("/recruiter/create_company.html")
 
@@ -72,7 +95,19 @@ def company(id):
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401 
     
-    return render_template("/recruiter/company.html")
+    rc = models.RecruiterCompanies.get(recruiterId=id, companyId=id)
+    
+    if not rc:
+        flash("Company not found", "error")
+        return redirect(url_for("recruiter.index"))
+    
+    companyModel = models.Companies.get(id=id)
+    
+    if not companyModel:
+        flash("Company not found", "error")
+        return redirect(url_for("recruiter.index"))
+    
+    return render_template("/recruiter/company.html", recruiter=rc , company=companyModel)
 
 
 @recruiter.get("/post/create")
@@ -84,21 +119,46 @@ def create_post():
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401
     
-    return render_template("/recruiter/create_post.html")
+    
+    recruiterCompanies = models.RecruiterCompanies.getAll(recruiterId=id)
+    companies = []
+    
+    for i in recruiterCompanies:
+        company = models.Companies.get(id=i.companyId)
+        companies.append(company)
+    
+    print(companies)
+    
+    
+    return render_template("/recruiter/create_post.html", companies=companies)
 
 
 @recruiter.get("/post/<id>")
 @jwt_required()
 def post(id):
     cookie = get_jwt_identity()
-    id, role = cookie.split(',')
+    user_id, role = cookie.split(',')
     
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401
+    
+    recruiter = models.Recruiters.get(id=user_id)
+    
+    if not recruiter:
+        return jsonify({"error": "Recruiter not found"}), 404
     
     post = models.JobPosts.get(id=id)
     
     if not post:
         return jsonify({"error": "Post not found"}), 404
     
-    return render_template("/recruiter/post.html", post=post)
+    skills = []
+    
+    for post_skill in models.PostSkills.getAll(postId=id):
+        skill = models.Skills.get(id=post_skill.skillId)
+        if skill is None:
+            continue
+        skills.append(skill.model_dump())    
+    
+    return render_template("/recruiter/post.html",recruiter=recruiter , post=post, skills=skills)
+

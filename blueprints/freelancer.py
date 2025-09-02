@@ -10,11 +10,22 @@ from flask_jwt_extended import (
     jwt_required, 
     get_jwt_identity
 )
+from flask_jwt_extended.exceptions import NoAuthorizationError, InvalidHeaderError
 from hashlib import sha256
 from db import models
 
 
 freelancer = Blueprint("freelancer", __name__)
+
+
+@freelancer.errorhandler(NoAuthorizationError)
+def handle_auth_errors(e):
+    return redirect(url_for('freelancer.login'))
+
+@freelancer.errorhandler(InvalidHeaderError)
+def handle_invalid_header_errors(e):
+    return redirect(url_for('freelancer.login'))
+
 
 
 @freelancer.get("/")

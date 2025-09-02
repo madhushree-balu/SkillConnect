@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freelancer Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
 </head>
 <body>
     <h1>Freelancer Profile</h1>
@@ -80,7 +81,13 @@
         
         <div class="skillInput">
             <input type="text" name="newSkill" id="newSkill" placeholder="Enter skill">
-            <input type="number" name="proficiencyLevel" id="proficiencyLevel" placeholder="Proficiency Level (1-10)" min="1" max="10">
+            <select name="proficiencyLevel" id="proficiencyLevel">
+                <!-- BEGINNER, INTERMEDIATE, ADVANCED, EXPERT -->
+                <option value="BEGINNER">BEGINNER</option>
+                <option value="INTERMEDIATE">INTERMEDIATE</option>
+                <option value="ADVANCED">ADVANCED</option>
+                <option value="EXPERT">EXPERT</option>
+            </select>
             <input type="number" name="yearsOfExperience" id="yearsOfExperience" placeholder="Years of Experience" min="0">
             <button id="addSkill" onclick="addSkill()">Add Skill</button>
         </div>
@@ -514,8 +521,8 @@
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    skillId: skillName, // This might need adjustment based on your backend
-                    proficiencyLevel: parseInt(proficiencyLevel),
+                    skillName: skillName, // This might need adjustment based on your backend
+                    proficiencyLevel: proficiencyLevel,
                     yearsOfExperience: parseInt(yearsOfExperience) || 0
                 })
             })
@@ -546,7 +553,7 @@
             skillDiv.innerHTML = `
                 <div class="skillInfo">
                     <strong>${skillData.skill.name || skillData.skill.skill}</strong>
-                    <span>Proficiency: ${skillData.proficiencyLevel}/10</span>
+                    <span>Proficiency: ${skillData.proficiencyLevel}</span>
                     <span>Experience: ${skillData.yearsOfExperience} years</span>
                 </div>
                 <div class="skillRemove">
@@ -577,6 +584,7 @@
             })
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 if (data.message) {
                     document.querySelector(`[skillId="${skillId}"]`).remove();
                     alert('Skill removed successfully!');

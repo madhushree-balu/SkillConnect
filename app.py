@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import Flask
 from db import models, database_setup
 
@@ -20,6 +21,9 @@ def create_app():
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
     app.config["JWT_COOKIE_SECURE"] = False          # Set True in production (HTTPS only)
     app.config["JWT_COOKIE_CSRF_PROTECT"] = True     # Extra CSRF protection
+    
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=30)
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
     
     # Initialize JWT
     jwt = JWTManager(app)
