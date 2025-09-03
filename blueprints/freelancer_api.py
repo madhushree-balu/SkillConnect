@@ -18,6 +18,10 @@ from db import models
 freelancer_api = Blueprint("freelancer_api", __name__)
 
 
+
+
+
+
 @freelancer_api.route("/login", methods=["POST"])
 def login():
     data = request.get_json()

@@ -1,5 +1,5 @@
 from datetime import timedelta
-from flask import Flask
+from flask import Flask, render_template, redirect, url_for
 from db import models, database_setup
 
 from flask import Flask
@@ -16,6 +16,7 @@ def create_app():
     if not database_setup.check_database_status():
         database_setup.create_database()
     
+    app.secret_key = "secret_key 123"
     # Secret key for JWT
     app.config["JWT_SECRET_KEY"] = "DO YOU KNOW FLASK??"
     app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
@@ -34,6 +35,15 @@ def create_app():
     
     app.register_blueprint(recruiter, url_prefix="/recruiter")
     app.register_blueprint(freelancer, url_prefix="/freelancer")
+    
+    
+    @app.route("/")
+    def index():
+        return render_template("index.html")
+    
+    @jwt.unauthorized_loader
+    def unauthorize_response(callback):
+        return redirect(url_for('index'))
     
     return app
 

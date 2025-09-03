@@ -24,18 +24,20 @@ def index():
     cookie = get_jwt_identity()
     if not cookie:
         print("no cookie")
-        return jsonify({"error": "Unauthorized"}), 401
+        flash("You need to login first!", "warning")
+        return redirect(url_for("recruiter.login"))
     
     if cookie.split(',')[-1] != "recruiter":
         print("no recruiter")
-        return jsonify({"error": "Unauthorized"}), 401
+        flash("You need to login first!", "warning")
+        return redirect(url_for("recruiter.login"))
     
     recruiter = models.Recruiters.get(id=int(cookie.split(',')[0]))
     
     print(cookie)
     if not recruiter:
         print("no get recruiter")
-        return jsonify({"error": "Unauthorized"}), 401
+        return redirect(url_for("recruiter.login"))
     
     recruiterCompanies = models.RecruiterCompanies.getAll(recruiterId=recruiter.id)
     companies = []

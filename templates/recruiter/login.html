@@ -1,15 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends '/freelancer/base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recruiter Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+{% block title %}Recruiter Login{% endblock %}
 
-</head>
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+{% endblock %}
 
-<body>
+{% block content %}
     <div class="container">
         <h1>Recruiter Login</h1>
         <form id="loginForm">
@@ -64,7 +61,7 @@
                     messageDiv.innerHTML = '<p style="color: green;">' + data.message + '</p>';
                     // Redirect to recruiter dashboard or home page
                     setTimeout(() => {
-                        window.location.href = '/recruiter_api/';
+                        window.location.href = '/recruiter/';
                     }, 1000);
                 } else {
                     messageDiv.innerHTML = '<p style="color: red;">' + data.error + '</p>';
@@ -75,6 +72,4 @@
             }
         });
     </script>
-</body>
-
-</html>
+{% endblock %}
