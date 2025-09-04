@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status - {{ job.title }} at {{ company.companyName }}</title>
+</head>
+<body>
+    <h1>Application Status</h1>
+    
+    <!-- Application Status Summary -->
+    <div class="status-summary">
+        <h2>Your Application</h2>
+        <p><strong>Job:</strong> {{ job.title }}</p>
+        <p><strong>Company:</strong> {{ company.companyName }}</p>
+        <p><strong>Applied On:</strong> {{ application.appliedOn[:19] if application.appliedOn else 'Recently' }}</p>
+        <p><strong>Status:</strong> 
+            <span class="status-{{ application.status.lower() }}">
+                {{ application.status.replace('_', ' ').title() }}
+            </span>
+        </p>
+        
+        {% if application.status == 'PENDING' %}
+            <p><em>Your application is being reviewed by the hiring team.</em></p>
+        {% elif application.status == 'UNDER_REVIEW' %}
+            <p><em>Your application is currently under detailed review.</em></p>
+        {% elif application.status == 'SHORTLISTED' %}
+            <p><em>Congratulations! You have been shortlisted for this position.</em></p>
+        {% elif application.status == 'INTERVIEWED' %}
+            <p><em>You have completed the interview process. Waiting for final decision.</em></p>
+        {% elif application.status == 'ACCEPTED' %}
+            <p><em>Congratulations! Your application has been accepted.</em></p>
+        {% elif application.status == 'REJECTED' %}
+            <p><em>Unfortunately, your application was not selected for this position.</em></p>
+        {% elif application.status == 'WITHDRAWN' %}
+            <p><em>You have withdrawn your application for this position.</em></p>
+        {% endif %}
+    </div>
+    
+    <!-- Job Details Section -->
+    <div class="job-details">
+        <h2>Job Details</h2>
+        <h3>{{ job.title }}</h3>
+        <p><strong>Experience Required:</strong> {{ job.experience }} years</p>
+        <p><strong>Job Type:</strong> {{ job.jobType.replace('_', ' ').title() }}</p>
+        <p><strong>Location:</strong> {{ job.location }}</p>
+        <p><strong>Salary:</strong> ₹{{ "{:,.0f}".format(job.salary) if job.salary else 'Not disclosed' }}</p>
+        
+        <h4>Job Description:</h4>
+        <p>{{ job.description }}</p>
+    </div>
+    
+    <!-- Company Details Section -->
+    <div class="company-details">
+        <h2>Company Details</h2>
+        <h3>{{ company.companyName }}</h3>
+        <p><strong>Phone:</strong> {{ company.companyPhone }}</p>
+        <p><strong>Address:</strong> {{ company.companyAddress }}</p>
+        <p><strong>Employee Size:</strong> {{ company.employeeSize }} employees</p>
+        
+        <h4>About Company:</h4>
+        <p>{{ company.companyDescription }}</p>
+    </div>
+    
+    <!-- Skills Required Section -->
+    {% if job.skills %}
+    <div class="skills-section">
+        <h2>Skills Required</h2>
+        <ul>
+            {% for skill in job.skills %}
+                <li>
+                    {{ skill.skill }}
+                    {% if skill.isRequired %}
+                        <strong>(Required)</strong>
+                    {% else %}
+                        <em>(Preferred)</em>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <!-- Application Details -->
+    <div class="application-details">
+        <h2>Your Application Details</h2>
+        
+        {% if resume %}
+        <div class="resume-info">
+            <h3>Resume Submitted</h3>
+            <p><strong>File Name:</strong> {{ resume.name }}</p>
+            <p><strong>File Size:</strong> {{ (resume.fileSize / 1024)|round(1) }} KB</p>
+            <p><strong>Uploaded:</strong> {{ resume.uploadedAt[:19] if resume.uploadedAt else 'Recently' }}</p>
+        </div>
+        {% endif %}
+        
+        {% if application.coverLetter %}
+        <div class="cover-letter-info">
+            <h3>Cover Letter</h3>
+            <div class="cover-letter-content">
+                <p>{{ application.coverLetter|replace('\n', '<br>')|safe }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Actions -->
+    <div class="actions">
+        <h2>Actions</h2>
+        <p>
+            <a href="{{ url_for('freelancer.jobs') }}">← Back to Job Search</a>
+        </p>
+        
+        {% if application.status in ['PENDING', 'UNDER_REVIEW'] %}
+        <p>
+            <em>Note: You can withdraw your application if you no longer wish to be considered for this position.</em>
+        </p>
+        <!-- You can add a withdraw application form here if needed -->
+        {% endif %}
+    </div>
+    
+    <!-- Status Timeline (Optional Enhancement) -->
+    <div class="status-timeline">
+        <h2>Application Timeline</h2>
+        <ul>
+            <li>
+                <strong>Applied:</strong> {{ application.appliedOn[:19] if application.appliedOn else 'Recently' }}
+            </li>
+            {% if application.updatedAt and application.updatedAt != application.appliedOn %}
+            <li>
+                <strong>Last Updated:</strong> {{ application.updatedAt[:19] }}
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+</body>
+</html>

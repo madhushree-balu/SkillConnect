@@ -1,0 +1,26 @@
+{% extends './base.html' %}
+
+{% block title %} Freelancer Dashboard {% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="freelancer_index.css">
+{% endblock %}
+{% block content %}
+
+    <div class="dashboard">
+        <h1> Freelancer Dashboard </h1>
+        <h4> Hello @{{ freelancer.username }}</h4>
+    </div>
+
+    <div class="main_content">
+        <h2>
+            Here are some quick links for you
+        </h2>
+        <div class ="links">
+            <a href="{{ url_for('freelancer.jobs') }}">Search Jobs</a>
+            <a href="{{ url_for('freelancer.applications') }}">Applied By You</a>
+            <a href="{{ url_for('freelancer.profile') }}">Your Profile</a>
+        </div>
+    </div>
+
+{% endblock %}

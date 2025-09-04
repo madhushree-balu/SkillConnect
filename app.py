@@ -43,6 +43,7 @@ def create_app():
     
     @jwt.unauthorized_loader
     def unauthorize_response(callback):
+        print("Unauthorized")
         return redirect(url_for('index'))
     
     return app

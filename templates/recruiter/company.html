@@ -33,6 +33,36 @@
             </div>
         </div>
     </section>
+    <section id="recruiters">
+        <h2>Company Recruiters</h2>
+        <div class="recruiters" id="recruiterContainer">
+            {% for rcs in recruiters %}
+                <div class="recruiter">
+                    <div class="group">
+
+                        <div>
+                            <span>Username: </span><span class="value">{{ rcs["username"] }}</span>
+                        </div>
+                        <div>
+                            <span>Role: </span><span class="value">{{ rcs["role"] }}</span>
+                        </div>
+                        <div>
+                            <span>Recuiter Email: </span><span class="value">{{ rcs["email"] }}</span>
+                        </div>
+                    </div>
+                    <div class="buttons">
+                        <a href="/recruiter/profile/{{ rcs['username'] }}">View Profile</a>
+                        {% if rc['role'] == 'admin' %}
+                            {% if rcs['role'] == 'recruiter' %}
+                                <button onclick="removeRecruiter({{ rcs['id'] }})">Remove</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </section>
 
     <!-- Job Posts Section -->
     <section id="posts">

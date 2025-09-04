@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Search - Freelancer Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .search-section {
+            padding: 30px;
+            background: #f8f9ff;
+            border-bottom: 1px solid #e0e6ff;
+        }
+        
+        .search-form {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .search-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e6ff;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .jobs-section {
+            padding: 30px;
+        }
+        
+        .jobs-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .job-card {
+            background: white;
+            border: 1px solid #e0e6ff;
+            border-radius: 12px;
+            padding: 25px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .job-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .job-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .company-name {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .job-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .job-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .skills-section {
+            margin-bottom: 20px;
+        }
+        
+        .skills-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .job-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .salary {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #28a745;
+        }
+        
+        .apply-btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .apply-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .no-jobs {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .no-jobs h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .page-btn {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover,
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .search-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .job-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .job-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Find Your Perfect Job</h1>
+            <p>Discover amazing opportunities that match your skills</p>
+        </div>
+        
+        <div class="search-section">
+            <form method="GET" action="/freelancer/jobs" class="search-form">
+                <div class="search-row">
+                    <div class="form-group">
+                        <label for="search">🔍 Search Jobs</label>
+                        <input type="text" id="search" name="search" placeholder="Enter job title, skills, or keywords..." value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="page">📄 Page</label>
+                        <input type="number" id="page" name="page" min="0" value="{{ request.args.get('page', 0) }}">
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="search-btn">Search Jobs</button>
+                    </div>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="min_experience">💼 Min Experience (years)</label>
+                        <input type="number" id="min_experience" name="min_experience" min="0" value="{{ request.args.get('min_experience', '') }}" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_experience">📈 Max Experience (years)</label>
+                        <input type="number" id="max_experience" name="max_experience" min="0" value="{{ request.args.get('max_experience', '') }}" placeholder="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="job_type">⚡ Job Type</label>
+                        <select id="job_type" name="job_type">
+                            <option value="">All Types</option>
+                            <option value="FULL_TIME" {{ 'selected' if request.args.get('job_type') == 'FULL_TIME' }}>Full Time</option>
+                            <option value="PART_TIME" {{ 'selected' if request.args.get('job_type') == 'PART_TIME' }}>Part Time</option>
+                            <option value="CONTRACT" {{ 'selected' if request.args.get('job_type') == 'CONTRACT' }}>Contract</option>
+                            <option value="INTERNSHIP" {{ 'selected' if request.args.get('job_type') == 'INTERNSHIP' }}>Internship</option>
+                            <option value="FREELANCE" {{ 'selected' if request.args.get('job_type') == 'FREELANCE' }}>Freelance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="company_name">🏢 Company</label>
+                        <input type="text" id="company_name" name="company_name" placeholder="Company name..." value="{{ request.args.get('company_name', '') }}">
+                    </div>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="min_salary">💰 Min Salary</label>
+                        <input type="number" id="min_salary" name="min_salary" min="0" step="1000" value="{{ request.args.get('min_salary', '') }}" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_salary">💎 Max Salary</label>
+                        <input type="number" id="max_salary" name="max_salary" min="0" step="1000" value="{{ request.args.get('max_salary', '') }}" placeholder="1000000">
+                    </div>
+                    <div class="form-group">
+                        <label for="skills">🎯 Skills</label>
+                        <input type="text" id="skills" name="skills" placeholder="Python, JavaScript, React..." value="{{ request.args.get('skills', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">📍 Location</label>
+                        <input type="text" id="location" name="location" placeholder="City, State..." value="{{ request.args.get('location', '') }}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="jobs-section">
+            {% if jobs %}
+                <div class="jobs-grid">
+                    {% for job in jobs %}
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">{{ job['title'] }}</h3>
+                                <div class="company-name">{{ job['company_name'] if job['company_name'] else 'Company Name' }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="job-meta">
+                            <div class="meta-item">
+                                <span>💼</span>
+                                <span>{{ job['experience'] }} years experience</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⚡</span>
+                                <span>{{ job['jobType'].replace('_', ' ').title() }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📍</span>
+                                <span>{{ job['location'] }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>Posted: {{ job['postedOn'][:10] if job['postedOn'] else 'Recently' }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-description">
+                            {{ job['description'][:200] + '...' if job['description'] and job['description']|length > 200 else job['description'] }}
+                        </div>
+                        
+                        {% if job['skills'] %}
+                        <div class="skills-section">
+                            <div class="skills-title">Required Skills:</div>
+                            <div class="skills-list">
+                                {% for skill in job['skills'] %}
+                                    <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="job-footer">
+                            <div class="salary">₹{{ "{:,.0f}".format(job['salary']) if job['salary'] else 'Salary not disclosed' }}</div>
+                            <button class="apply-btn" onclick="applyForJob({{ job['id'] }})">Apply Now</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination">
+                    {% set current_page = request.args.get('page', 0)|int %}
+                    {% if current_page > 0 %}
+                        <a href="?{{ request.query_string.decode().replace('page=' + request.args.get('page', '0'), 'page=' + (current_page - 1)|string) }}" class="page-btn">← Previous</a>
+                    {% endif %}
+                    
+                    <span class="page-btn active">Page {{ current_page + 1 }}</span>
+                    
+                    {% if jobs|length == 10 %}
+                        <a href="?{{ request.query_string.decode() + ('&' if request.query_string else '') }}page={{ current_page + 1 }}" class="page-btn">Next →</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="no-jobs">
+                    <h3>😔 No jobs found</h3>
+                    <p>Try adjusting your search criteria or check back later for new opportunities.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function applyForJob(jobId) {
+            // You can implement the job application logic here
+            // For example, redirect to application form or show a modal
+            window.location.href = `/freelancer/apply/${jobId}`;
+        }
+        
+        // Auto-submit form when filters change (optional)
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.search-form');
+            const inputs = form.querySelectorAll('select');
+            
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    // Uncomment the line below if you want auto-submit on filter change
+                    // form.submit();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

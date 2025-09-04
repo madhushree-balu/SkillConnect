@@ -97,6 +97,12 @@ def company(id):
     if role != "recruiter":
         return jsonify({"error": "Unauthorized"}), 401 
     
+    recruiter = models.Recruiters.get(id=id)
+    
+    if not recruiter:
+        flash("Recruiter not found", "error")
+        return redirect(url_for("recruiter.login"))
+    
     rc = models.RecruiterCompanies.get(recruiterId=id, companyId=id)
     
     if not rc:
@@ -109,12 +115,23 @@ def company(id):
         flash("Company not found", "error")
         return redirect(url_for("recruiter.index"))
     
-    return render_template("/recruiter/company.html", recruiter=rc , company=companyModel)
+    companyRecruiters = models.RecruiterCompanies.getAll(companyId=id)
+    recruiters = []
+    
+    for i in companyRecruiters:
+        recruiter = models.Recruiters.get(id=i.recruiterId)
+        if recruiter:
+            recruiter = recruiter.model_dump()
+            recruiter["role"] = i.role
+            recruiters.append(recruiter)
+    
+    return render_template("/recruiter/company.html", recruiter=recruiter, rc=rc , company=companyModel, recruiters = recruiters)
 
 
 @recruiter.get("/post/create")
 @jwt_required()
 def create_post():
+    
     cookie = get_jwt_identity()
     id, role = cookie.split(',')
     
@@ -160,7 +177,18 @@ def post(id):
         skill = models.Skills.get(id=post_skill.skillId)
         if skill is None:
             continue
-        skills.append(skill.model_dump())    
+        skills.append(skill.model_dump())
+        
     
-    return render_template("/recruiter/post.html",recruiter=recruiter , post=post, skills=skills)
+    applicationModels = models.Applications.getAll(jobPostId=id)
+    applications = []
+    
+    for i in applicationModels:
+        freelancer = models.Freelancers.get(id=i.freelancerId)
+        if freelancer:
+            i = i.model_dump()
+            i['freelancer'] = freelancer.model_dump()
+            applications.append(i)
+    
+    return render_template("/recruiter/post.html",recruiter=recruiter , post=post, skills=skills, applications=applications)
 

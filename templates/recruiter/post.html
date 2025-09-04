@@ -103,6 +103,22 @@
         </div>
     </section>
 
+
+    {% for application in applications %}
+        
+        
+        <h2>Application</h2>
+        <p><strong>Applied On:</strong> {{ application['appliedOn'] }}</p>
+        <p><strong>Resume:</strong> {{ application['resume'] }}</p>
+        <p><strong>Cover Letter:</strong> {{ application['coverLetter'] }}</p>
+
+        <h2>Freelancer Details</h2>
+        <p><strong>Freelancer Name:</strong> {{ application['freelancer']['username'] }}</p>
+        <p><strong>Freelancer Email:</strong> {{ application['freelancer']['email'] }}</p>
+
+    {% endfor %}
+
+
     <script>
         let isEditing = false;
 

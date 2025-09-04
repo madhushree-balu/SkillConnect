@@ -173,7 +173,158 @@ class JobPosts(DataModel):
         # Exclude auto-generated fields including postedOn
         data = self.model_dump(exclude={"id", "createdAt", "updatedAt", "postedOn"})
         return execute(insertQueries[self.tableName], list(data.values()))
+    
+    # Add this enhanced search method to your JobPosts class in models.py
 
+    @classmethod
+    def search(cls, search="", page=0, min_experience=None, max_experience=None, 
+            job_type=None, company_name=None, min_salary=None, max_salary=None, 
+            skills=None, location=None):
+        """
+        Enhanced search method with multiple filters
+        """
+        # Build the base query with JOINs
+        base_query = """
+            SELECT DISTINCT jp.*, c.companyName as company_name
+            FROM JobPosts jp
+            LEFT JOIN Companies c ON jp.companyId = c.id
+            LEFT JOIN PostSkills ps ON jp.id = ps.postId
+            LEFT JOIN Skills s ON ps.skillId = s.id
+            WHERE jp.isActive = 1
+        """
+        
+        conditions = []
+        params = []
+        
+        # Search in title and description
+        if search:
+            conditions.append("(jp.title LIKE ? OR jp.description LIKE ?)")
+            params.extend([f"%{search}%", f"%{search}%"])
+        
+        # Experience filters
+        if min_experience is not None:
+            conditions.append("jp.experience >= ?")
+            params.append(min_experience)
+        
+        if max_experience is not None:
+            conditions.append("jp.experience <= ?")
+            params.append(max_experience)
+        
+        # Job type filter
+        if job_type:
+            conditions.append("jp.jobType = ?")
+            params.append(job_type)
+        
+        # Company name filter
+        if company_name:
+            conditions.append("c.companyName LIKE ?")
+            params.append(f"%{company_name}%")
+        
+        # Salary filters
+        if min_salary is not None:
+            conditions.append("jp.salary >= ?")
+            params.append(min_salary)
+        
+        if max_salary is not None:
+            conditions.append("jp.salary <= ?")
+            params.append(max_salary)
+        
+        # Skills filter
+        if skills:
+            skill_list = [skill.strip() for skill in skills.split(',') if skill.strip()]
+            if skill_list:
+                skill_conditions = []
+                for skill in skill_list:
+                    skill_conditions.append("s.skill LIKE ?")
+                    params.append(f"%{skill}%")
+                conditions.append(f"({' OR '.join(skill_conditions)})")
+        
+        # Location filter
+        if location:
+            conditions.append("jp.location LIKE ?")
+            params.append(f"%{location}%")
+        
+        # Add conditions to query
+        if conditions:
+            base_query += " AND " + " AND ".join(conditions)
+        
+        # Add ordering and pagination
+        base_query += " ORDER BY jp.postedOn DESC LIMIT ? OFFSET ?"
+        params.extend([10, page * 10])  # Fixed: should be page * 10, not page * 50
+        
+        # Execute query
+        data = fetch(base_query, params)
+        
+        if not data:
+            return []
+        
+        # Convert to JobPosts objects and attach additional data
+        result = []
+        for row in data:
+            row_dict = dict(row)
+            # Store company name for template access
+            company_name = row_dict.pop('company_name', None)
+            
+            instance = cls(**row_dict)
+            
+            instance = instance.model_dump()
+            # Add company name as attribute
+            instance['company_name'] = company_name
+            
+            # Get skills for this job post
+            instance['skills'] = [skill['skill'] for skill in cls.get_job_skills(instance['id'])]
+            
+            result.append(instance)
+        
+        return result
+
+    @classmethod
+    def get_job_skills(cls, job_id):
+        """
+        Get all skills for a specific job post
+        """
+        skill_data = fetch("""
+            SELECT s.id, s.skill, ps.isRequired
+            FROM Skills s
+            JOIN PostSkills ps ON s.id = ps.skillId
+            WHERE ps.postId = ?
+            ORDER BY ps.isRequired DESC, s.skill ASC
+        """, (job_id,))
+        
+        if not skill_data:
+            return []
+        
+        skills = []
+        for row in skill_data:
+            skill_dict = dict(row)
+            skills.append(skill_dict)
+        
+        return skills
+
+    @classmethod
+    def get_with_company_and_skills(cls, job_id):
+        """
+        Get a single job post with company and skills information
+        """
+        job_data = fetch("""
+            SELECT jp.*, c.companyName as company_name
+            FROM JobPosts jp
+            LEFT JOIN Companies c ON jp.companyId = c.id
+            WHERE jp.id = ?
+        """, (job_id,), one=True)
+        
+        if not job_data:
+            return None
+        
+        row_dict = dict(job_data)
+        company_name = row_dict.pop('company_name', None)
+        
+        instance = cls(**row_dict)
+        instance = instance.model_dump()
+        instance['company_name'] = company_name
+        instance['skills'] = cls.get_job_skills(instance['id'])
+        
+        return instance
 
 class Skills(DataModel):
     skill: str
