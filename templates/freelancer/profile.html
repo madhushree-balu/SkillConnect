@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freelancer Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
-</head>
+{% extends '/base.html' %}
+
+{% block title %}Freelancer Login{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
+{% endblock %}
+
+{% block content %}
 <body>
     <h1>Freelancer Profile</h1>
 
@@ -97,6 +98,9 @@
         </div>
     </section>
 
+
+
+    <!-- THE SCRIPTS -->
     <script>
         // Load profile data on page load
         function getCookie(name) {
@@ -608,4 +612,5 @@
         });
     </script>
 </body>
-</html>
+
+{% endblock %}

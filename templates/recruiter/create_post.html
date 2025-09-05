@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Job Post</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
-</head>
-<body>
+{% extends '/base.html' %}
+
+{% block title %}Post a Job{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+{% endblock %}
+
+{% block content %}
     <h1>Create New Job Post</h1>
 
     <section id="createPost">
@@ -180,5 +180,4 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}

@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apply for {{ job.title }} - {{ company.companyName }}</title>
-</head>
-<body>
+{% extends '/base.html' %}
+
+{% block title %}Apply for {{ job.title }} - {{ company.companyName }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
+{% endblock %}
+
+{% block content %}
     <h1>Apply for Job</h1>
     
     <!-- Job Details Section -->
@@ -193,5 +194,5 @@
             }
         });
     </script>
-</body>
-</html>
+
+{% endblock %}

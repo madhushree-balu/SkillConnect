@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Company</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
-</head>
-<body>
+{% extends '/base.html' %}
+
+{% block title %}Create New Company{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+{% endblock %}
+
+{% block content %}
     <h1>Create New Company</h1>
 
     <section id="createCompany">
@@ -94,7 +94,7 @@
             .then(data => {
                 if (data.message) {
                     alert('Company created successfully!');
-                    window.location.href = '/recruiter/dashboard';
+                    window.location.href = '/recruiter';
                 } else {
                     alert(data.error || 'Failed to create company');
                 }
@@ -106,7 +106,7 @@
         }
 
         function goBack() {
-            window.location.href = '/recruiter/dashboard';
+            window.location.href = '/recruiter';
         }
 
         // Add Enter key support
@@ -121,5 +121,4 @@
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}

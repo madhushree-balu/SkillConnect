@@ -1,4 +1,4 @@
-{% extends '/recruiter/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Recruiter Dashboard{% endblock %}
 
@@ -19,7 +19,7 @@
 
     <!-- Companies Section -->
     <section id="companies">
-        <h2>My Companies</h2>
+        <h2>Company and Job Posts</h2>
         <div class="container" id="companiesContainer">
             {% for company in companies %}
                 <a href="/recruiter/company/{{ company.id }}">

@@ -8,10 +8,23 @@
 <body>
     <nav>
         <h1>Skill Connect</h1>
-        <ul>
-            <li><a href="{{  url_for('freelancer.login')  }}">Freelancer Login</a>
-            <li><a href="{{  url_for('recruiter.login')  }}">Recruiter Login</a>
-        </ul>
+        {% if freelancer %}
+            <ul>
+                <li><a href="{{  url_for('freelancer.profile')  }}">Profile</a>
+                <li><a href="{{  url_for('recruiter.jobs')  }}">Jobs</a>
+                <li><a href="{{  url_for('recruiter.applications')  }}">Applications</a>
+            </ul>
+        {% elif recruiter %}
+            <ul>
+                <li><a href="{{  url_for('recruiter.index')  }}">Dashboard</a>
+                <li><a href="{{  url_for('recruiter.create_post')  }}">New Post</a>
+            </ul>
+        {% else %}
+            <ul>
+                <li><a href="{{  url_for('freelancer.login')  }}">Freelancer Login</a>
+                <li><a href="{{  url_for('recruiter.login')  }}">Recruiter Login</a>
+            </ul>
+        {% endif %}
     </nav>
     
     <div id="notifications">

@@ -80,40 +80,6 @@ def profile():
     return render_template("/freelancer/profile.html")
 
 
-@freelancer.get("/applications")
-@jwt_required()
-def applications():
-    # get current user
-    cookie = get_jwt_identity()
-    if not cookie:
-        print("no cookie")
-        return redirect(url_for("freelancer.login"))
-    
-    if cookie.split(',')[-1] != "freelancer":
-        return redirect(url_for("freelancer.login"))
-    
-    fid = int(cookie.split(',')[0])
-    
-    freelancer = models.Freelancers.get(id=fid)
-    
-    if not freelancer:
-        print("no get freelancer")
-        return redirect(url_for("freelancer.login"))
-    
-    applicationModels = models.Applications.getAll(freelancerId=fid)
-    jobs = []
-    
-    for i in applicationModels:
-        jobModel = models.JobPosts.get(id=i.jobPostId)
-        if jobModel:
-            jobs.append(jobModel)
-        else:
-            applicationModels.remove(i)
-            continue
-    
-    return render_template("/freelancer/applications.html", applications=applicationModels)
-
-
 @freelancer.get("/jobs")
 @jwt_required()
 def jobs():
@@ -333,9 +299,9 @@ def application_status(jobId):
                          resume=resume)
 
 
-@freelancer.route("/my-applications")
+@freelancer.route("applications")
 @jwt_required()
-def my_applications():
+def applications():
     cookie = get_jwt_identity()
     current_user_id = int(cookie.split(',')[0])
 

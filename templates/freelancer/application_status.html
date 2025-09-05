@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Status - {{ job.title }} at {{ company.companyName }}</title>
-</head>
-<body>
+{% extends '/base.html' %}
+
+{% block title %}Application Status - {{ job.title }} at {{ company.companyName }}{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="freelancer_index.css">
+{% endblock %}
+{% block content %}
     <h1>Application Status</h1>
     
     <!-- Application Status Summary -->
@@ -133,5 +133,5 @@
             {% endif %}
         </ul>
     </div>
-</body>
-</html>
+
+{% endblock %}

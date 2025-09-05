@@ -1,4 +1,4 @@
-{% extends '/recruiter/base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Job Post - {{ post.title }}{% endblock %}
 
@@ -11,7 +11,7 @@
 
     <div class="header">
         <div class="actions">
-            <a href="/recruiter/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+            <a href="/recruiter" class="btn btn-secondary">Back to Dashboard</a>
             <button onclick="toggleEdit()" class="btn btn-primary" id="editBtn">Edit Post</button>
             <button onclick="deletePost()" class="btn btn-danger">Delete Post</button>
         </div>
@@ -223,7 +223,7 @@
             .then(data => {
                 if (data.message) {
                     alert('Post deleted successfully!');
-                    window.location.href = '/recruiter/dashboard';
+                    window.location.href = '/recruiter';
                 } else {
                     alert(data.error || 'Failed to delete post');
                 }
