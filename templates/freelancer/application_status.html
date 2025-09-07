@@ -3,7 +3,37 @@
 {% block title %}Application Status - {{ job.title }} at {{ company.companyName }}{% endblock %}
 
 {% block head %}
-    <link rel="stylesheet" href="freelancer_index.css">
+
+<style>
+    #page {
+        gap: 20px;
+    }
+section#page > div {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    width: 90%;
+    padding: 20px 50px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    gap: 2px;
+}
+
+#page > h1 {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0px;
+}
+
+#page div h2 {
+    color: #343434;
+    border-bottom: 2px solid #808080;
+    margin-bottom: 10px;
+}
+
+</style>
+
 {% endblock %}
 {% block content %}
     <h1>Application Status</h1>

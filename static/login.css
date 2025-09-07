@@ -1,7 +1,7 @@
 /* Container styling matching reference design system */
 .container {
     width: 400px;
-    min-height: 50vh;
+    min-height: 30vh;
     border-radius: var(--radius);
     display: flex;
     align-items: center;
@@ -44,7 +44,7 @@ form > div {
 /* Input styling using reference design system */
 input {
     padding: 0.5rem 0.75rem;
-    border-radius: 50px;
+    border-radius: 10px;
     border: 1px solid var(--color-input);
     width: 100%;
     font-size: 16px;
@@ -66,15 +66,15 @@ input[type="submit"] {
     align-items: center;
     justify-content: center;
     white-space: nowrap;
-    border-radius: 50px;
+    border-radius: 10px;
     font-size: 16px;
     font-weight: 500;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
     padding: 5px 25px;
-    border: none;
-    color: #ffffff;
-    background: #613aea;
+    border: 2px solid #343434;
+    color: #3f3f3f;
+    background: #ffffff;
     width: fit-content;
     align-self: center;
     min-height: auto;
@@ -179,6 +179,6 @@ body {
 
 body {
     background-color: hsla(132, 0%, 100%, 1);
-    background-image: radial-gradient(circle at 91% 11%, hsla(13, 100%, 88%, 0.66) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsla(323, 100%, 88%, 1) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsla(268, 100%, 88%, 1) 12.107536057085522%, transparent 63.33640956108327%);
+    background-image: radial-gradient(circle at 91% 11%, hsl(0deg 0% 100% / 66%) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsl(0deg 0% 100%) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsl(0deg 0% 83.84%) 12.107536057085522%, transparent 63.33640956108327%);
     background-blend-mode: normal, normal, normal;
 }

@@ -4,6 +4,61 @@
 
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+<style>
+    .application-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.9em;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+    
+    .status-pending { background-color: #ffeaa7; color: #d63031; }
+    .status-under-review { background-color: #74b9ff; color: #0984e3; }
+    .status-shortlisted { background-color: #a29bfe; color: #6c5ce7; }
+    .status-interviewed { background-color: #fdcb6e; color: #e17055; }
+    .status-accepted { background-color: #55efc4; color: #00b894; }
+    .status-rejected { background-color: #ff7675; color: #d63031; }
+    .status-withdrawn { background-color: #b2bec3; color: #636e72; }
+    
+    .btn-accept {
+        background-color: #00b894;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .btn-reject {
+        background-color: #d63031;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .btn-accept:hover {
+        background-color: #00a085;
+    }
+    
+    .btn-reject:hover {
+        background-color: #b92c28;
+    }
+    
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -21,49 +76,61 @@
     <section id="postDetails">
         <h2>Post Information</h2>
         <form id="postForm">
-            <div class="form-group">
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" value="{{ post.title }}" disabled>
-            </div>
+            <div class="tdejl">
 
-            <div class="form-group">
-                <label for="description">Description:</label>
-                <textarea id="description" name="description" disabled>{{ post.description }}</textarea>
+                <div class="titleDescription">
+                    <div class="form-group">
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title" value="{{ post.title }}" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description:</label>
+                        <textarea id="description" name="description" disabled>{{ post.description }}</textarea>
+                    </div>
+                </div>
+                
+                <div class="ejl">
+                    
+                    <div class="experienceJobType">
+                        <div class="form-group">
+                            <label for="experience">Experience Required (Years):</label>
+                            <input type="text" id="experience" name="experience" value="{{ post.experience or '' }}" disabled>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jobType">Job Type:</label>
+                            <select id="jobType" name="jobType" disabled>
+                                <option value="FULL_TIME" {% if post.jobType == 'FULL_TIME' %}selected{% endif %}>Full Time</option>
+                                <option value="PART_TIME" {% if post.jobType == 'PART_TIME' %}selected{% endif %}>Part Time</option>
+                                <option value="CONTRACT" {% if post.jobType == 'CONTRACT' %}selected{% endif %}>Contract</option>
+                                <option value="INTERNSHIP" {% if post.jobType == 'INTERNSHIP' %}selected{% endif %}>Internship</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" name="location" value="{{ post.location or '' }}" disabled>
+                    </div>
+                </div>
+                
             </div>
-
-            <div class="form-group">
-                <label for="experience">Experience Required:</label>
-                <input type="text" id="experience" name="experience" value="{{ post.experience or '' }}" disabled>
-            </div>
-
-            <div class="form-group">
-                <label for="jobType">Job Type:</label>
-                <select id="jobType" name="jobType" disabled>
-                    <option value="FULL_TIME" {% if post.jobType == 'FULL_TIME' %}selected{% endif %}>Full Time</option>
-                    <option value="PART_TIME" {% if post.jobType == 'PART_TIME' %}selected{% endif %}>Part Time</option>
-                    <option value="CONTRACT" {% if post.jobType == 'CONTRACT' %}selected{% endif %}>Contract</option>
-                    <option value="INTERNSHIP" {% if post.jobType == 'INTERNSHIP' %}selected{% endif %}>Internship</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="location">Location:</label>
-                <input type="text" id="location" name="location" value="{{ post.location or '' }}" disabled>
-            </div>
-
-            <div class="form-group">
-                <label for="salary">Salary:</label>
-                <input type="number" id="salary" name="salary" value="{{ post.salary or '' }}" disabled>
-            </div>
-
-            <div class="form-group">
-                <label for="validTill">Valid Till:</label>
-                <input type="date" id="validTill" name="validTill" value="{{ post.validTill or '' }}" disabled>
-            </div>
-
-            <div class="form-group">
-                <label for="isActive">Active:</label>
-                <input type="checkbox" id="isActive" name="isActive" {% if post.isActive %}checked{% endif %} disabled>
+            <div class="sva">
+                <div class="form-group">
+                    <label for="salary">Salary:</label>
+                    <input type="number" id="salary" name="salary" value="{{ post.salary or '' }}" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label for="validTill">Valid Till:</label>
+                    <input type="date" id="validTill" name="validTill" value="{{ post.validTill or '' }}" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label for="isActive">Active:</label>
+                    <input type="checkbox" id="isActive" name="isActive" {% if post.isActive %}checked{% endif %} disabled>
+                </div>
             </div>
 
             <div class="form-group" id="saveSection" style="display: none;">
@@ -85,7 +152,7 @@
                 <option value="ADVANCED">ADVANCED</option>
                 <option value="EXPERT">EXPERT</option>
             </select>
-            <input type="number" name="experience" id="experience" placeholder="Years of Experience" min="0">
+            <input type="number" name="experience" id="skillExperience" placeholder="Years of Experience" min="0">
             <button id="addSkillBtn" onclick="addSkill()">Add Skill</button>
         </div>
         
@@ -103,22 +170,59 @@
         </div>
     </section>
 
-
-    {% for application in applications %}
+    <!-- Applications Section -->
+    <section id="applicationsSection">
+        <h2>Applications ({{ applications|length }})</h2>
+        
+        <div id="application">
+            {% if applications %}
+                {% for application in applications %}
+                    <div class="application" data-application-id="{{ application.id }}">
+                        <div class="adetails">
+                            <h3>Application</h3>
+                            <p><strong>Applied On:</strong> {{ application['appliedOn'] }}</p>
+                            <p><strong>Status:</strong> 
+                                <span class="status-badge status-{{ application['status'].lower().replace('_', '-') }}">
+                                    {{ application['status'].replace('_', ' ') }}
+                                </span>
+                            </p>
+                            <p><strong>Resume:</strong> {{ application['resume'] }}</p>
+                            <p><strong>Cover Letter:</strong> {{ application['coverLetter'] or 'Not provided' }}</p>
+                            
+                            <!-- Application Action Buttons -->
+                            <div class="application-actions">
+                                {% if application['status'] in ['PENDING', 'UNDER_REVIEW', 'SHORTLISTED', 'INTERVIEWED'] %}
+                                    <button class="btn-accept" onclick="acceptApplication({{ application.id }})">
+                                        Accept
+                                    </button>
+                                    <button class="btn-reject" onclick="rejectApplication({{ application.id }})">
+                                        Reject
+                                    </button>
+                                {% elif application['status'] == 'ACCEPTED' %}
+                                    <span style="color: #00b894; font-weight: bold;">✓ Application Accepted</span>
+                                {% elif application['status'] == 'REJECTED' %}
+                                    <span style="color: #d63031; font-weight: bold;">✗ Application Rejected</span>
+                                {% elif application['status'] == 'WITHDRAWN' %}
+                                    <span style="color: #636e72; font-style: italic;">Application Withdrawn by Candidate</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="fdetails">
+                            <h3>Freelancer Details</h3>
+                            <p><strong>Name:</strong> {{ application['freelancer']['username'] }}</p>
+                            <p><strong>Email:</strong> {{ application['freelancer']['email'] }}</p>
+                            <a href="/f/{{ application['freelancer']['id'] }}" class="btn btn-info">View Profile</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No applications received yet.</p>
+            {% endif %}
+        </div>
+    </section>
         
         
-        <h2>Application</h2>
-        <p><strong>Applied On:</strong> {{ application['appliedOn'] }}</p>
-        <p><strong>Resume:</strong> {{ application['resume'] }}</p>
-        <p><strong>Cover Letter:</strong> {{ application['coverLetter'] }}</p>
-
-        <h2>Freelancer Details</h2>
-        <p><strong>Freelancer Name:</strong> {{ application['freelancer']['username'] }}</p>
-        <p><strong>Freelancer Email:</strong> {{ application['freelancer']['email'] }}</p>
-
-    {% endfor %}
-
-
     <script>
         let isEditing = false;
 
@@ -237,7 +341,7 @@
         function addSkill() {
             const skillName = document.getElementById('newSkill').value.trim();
             const proficiencyLevel = document.getElementById('proficiencyLevel').value;
-            const experience = document.getElementById('experience').value;
+            const experience = document.getElementById('skillExperience').value;
 
             if (!skillName) {
                 alert('Please enter a skill name');
@@ -274,7 +378,7 @@
                     alert('Skill added successfully!');
                     document.getElementById('newSkill').value = '';
                     document.getElementById('proficiencyLevel').value = '';
-                    document.getElementById('experience').value = '';
+                    document.getElementById('skillExperience').value = '';
                     // Reload the page to show the new skill
                     window.location.reload();
                 } else {
@@ -315,6 +419,65 @@
             .catch(error => {
                 console.error('Error:', error);
                 alert('Failed to remove skill');
+            });
+        }
+
+        // Application Management Functions
+        function acceptApplication(applicationId) {
+            if (!confirm('Are you sure you want to accept this application?')) {
+                return;
+            }
+
+            fetch(`/api/recruiter/applications/${applicationId}/accept`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token")
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Application accepted successfully!');
+                    // Reload the page to show updated status
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to accept application');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to accept application');
+            });
+        }
+
+        function rejectApplication(applicationId) {
+            if (!confirm('Are you sure you want to reject this application?')) {
+                return;
+            }
+
+            fetch(`/api/recruiter/applications/${applicationId}/reject`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token")
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Application rejected successfully!');
+                    // Reload the page to show updated status
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Failed to reject application');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to reject application');
             });
         }
 

@@ -1,81 +1,121 @@
 {% extends 'base.html' %}
 
-{% block title %}Recruiter Dashboard{% endblock %}
+{% block title %}Company Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+{% endblock %}
 
 {% block content %}
-    <!-- Companies Section -->
-    <section id="companies">
-        <h2>My Companies</h2>
-        <div class="container" id="companiesContainer">
+<!-- Company Details Section -->
+    <section id="company-details">
+        <h2>Company Information</h2>
+        <div class="container" id="companyContainer">
             <div class="company">
                 <div>
-                    <span>username:</span><span class="value">{{ company.username }}</span>
+                    <span>Username:</span><span class="value">{{ company['username'] }}</span>
                 </div>
                 <div>
-                    <span>companyName:</span><span class="value">{{ company.companyName }}</span>
+                    <span>Company Name:</span><span class="value">{{ company['companyName'] }}</span>
                 </div>
                 <div>
-                    <span>companyPhone:</span><span class="value">{{ company.companyPhone }}</span>
+                    <span>Phone:</span><span class="value">{{ company['companyPhone'] }}</span>
                 </div>
                 <div>
-                    <span>companyAddress:</span><span class="value">{{ company.companyAddress }}</span>
+                    <span>Address:</span><span class="value">{{ company['companyAddress'] }}</span>
                 </div>
                 <div>
-                    <span>companyDescription:</span><span class="value">{{ company.companyDescription }}</span>
+                    <span>Description:</span><span class="value">{{ company['companyDescription'] }}</span>
                 </div>
                 <div>
-                    <span>employeeSize:</span><span class="value">{{ company.employeeSize }}</span>
+                    <span>Employee Size:</span><span class="value">{{ company['employeeSize'] }}</span>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Company Recruiters Section -->
     <section id="recruiters">
         <h2>Company Recruiters</h2>
         <div class="recruiters" id="recruiterContainer">
-            {% for rcs in recruiters %}
+            {% for recruiter_id, rcs in recruiters.items() %}
                 <div class="recruiter">
                     <div class="group">
-
                         <div>
-                            <span>Username: </span><span class="value">{{ rcs["username"] }}</span>
+                            <span>Username: </span><span class="value">{{ rcs['username'] }}</span>
                         </div>
                         <div>
-                            <span>Role: </span><span class="value">{{ rcs["role"] }}</span>
+                            <span>Role: </span><span class="value">{{ rcs['role'] }}</span>
                         </div>
                         <div>
-                            <span>Recuiter Email: </span><span class="value">{{ rcs["email"] }}</span>
+                            <span>Recruiter Email: </span><span class="value">{{ rcs['email'] }}</span>
                         </div>
                     </div>
                     <div class="buttons">
                         <a href="/recruiter/profile/{{ rcs['username'] }}">View Profile</a>
-                        {% if rc['role'] == 'admin' %}
-                            {% if rcs['role'] == 'recruiter' %}
+                        {% if rc['role'] == 'ADMIN' %}
+                            {% if rcs['role'] == 'RECRUITER' %}
                                 <button onclick="removeRecruiter({{ rcs['id'] }})">Remove</button>
                             {% endif %}
                         {% endif %}
                     </div>
                 </div>
             {% endfor %}
-            </div>
         </div>
     </section>
 
     <!-- Job Posts Section -->
     <section id="posts">
-        <h2>My Job Posts</h2>
+        <h2>Company Job Posts</h2>
         <div class="container" id="postsContainer">
-            {% for post in posts %}
-                <a href="/recruiter/post/{{ post.postId }}">
-                    <div class="post">
-                        <h3>{{ post.title }}</h3>
-                        <p>{{ post.description }}</p>
-                    </div>
-                </a>
-            {% endfor %}
+            {% if posts %}
+                {% for post in posts %}
+                    <a href="/recruiter/post/{{ post['id'] }}">
+                        <div class="post">
+                            <h3>{{ post['title'] }}</h3>
+                            <p>{{ post['description'] }}</p>
+                            <div class="post-meta">
+                                <span>Salary: {{ post['salary'] }}</span>
+                                <span>Type: {{ post['jobType'] }}</span>
+                                <span>Location: {{ post['location'] }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p>No job posts found for this company.</p>
+            {% endif %}
         </div>
     </section>
 
     <script>
+        function removeRecruiter(recruiterId) {
+            if (confirm('Are you sure you want to remove this recruiter?')) {
+                fetch(`/api/recruiter/company/{{ company['id'] }}/remove-recruiter`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": getCookie("csrf_access_token")
+                    },
+                    body: JSON.stringify({ recruiterId: recruiterId }),
+                    credentials: "include"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Recruiter removed successfully!');
+                        location.reload();
+                    } else {
+                        alert('Failed to remove recruiter: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to remove recruiter');
+                });
+            }
+        }
+
         function logout() {
             fetch("/api/recruiter/logout", {
                 method: "POST",
@@ -98,6 +138,22 @@
                 console.error('Error:', error);
                 alert('Logout failed');
             });
+        }
+
+        // Helper function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
     </script>
 

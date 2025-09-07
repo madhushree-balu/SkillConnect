@@ -44,7 +44,7 @@ def index():
 @recruiter_api.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    username = data.get("username")
+    username = data.get("username", "").lower().strip()
     password = data.get("password")
     
     hashed_password = sha256(password.encode()).hexdigest()
@@ -487,3 +487,66 @@ def toggle_post_status(postId):
     
     status_text = "activated" if new_status else "deactivated"
     return jsonify({"message": f"Job post {status_text} successfully", "isActive": new_status}), 200
+
+
+# accept application
+@recruiter_api.route("/applications/<int:applicationId>/accept", methods=["POST"])
+@jwt_required()
+def accept_application(applicationId):
+    """Accept an application for a job post"""
+    cookie = get_jwt_identity()
+    id, role = cookie.split(',')
+    
+    if role != "recruiter":
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    # Check if application exists and belongs to this recruiter
+    application = models.Applications.get(id=applicationId)
+    if application is None:
+        return jsonify({"error": "Application not found"}), 404
+    
+    jobPost = models.JobPosts.get(id=application.jobPostId)
+    if jobPost is None:
+        return jsonify({"error": "Job post not found"}), 404
+    
+    if jobPost.recruiterId != int(id):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    # Update the application status
+    result = application.update(status="ACCEPTED")
+    
+    if result is None:
+        return jsonify({"error": "Failed to accept application"}), 500
+    
+    return jsonify({"message": "Application accepted successfully"}), 200
+
+
+@recruiter_api.route("/applications/<int:applicationId>/reject", methods=["POST"])
+@jwt_required()
+def reject_application(applicationId):
+    """Reject an application for a job post"""
+    cookie = get_jwt_identity()
+    id, role = cookie.split(',')
+    
+    if role != "recruiter":
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    # Check if application exists and belongs to this recruiter
+    application = models.Applications.get(id=applicationId)
+    if application is None:
+        return jsonify({"error": "Application not found"}), 404
+    
+    jobPost = models.JobPosts.get(id=application.jobPostId)
+    if jobPost is None:
+        return jsonify({"error": "Job post not found"}), 404
+    
+    if jobPost.recruiterId != int(id):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    # Update the application status
+    result = application.update(status="REJECTED")
+    
+    if result is None:
+        return jsonify({"error": "Failed to reject application"}), 500
+    
+    return jsonify({"message": "Application rejected successfully"}), 200

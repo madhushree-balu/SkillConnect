@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ececec 0%, #d8d8d8 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -21,7 +21,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(135deg, #3c3c3c 0%, #343434 100%);
     color: white;
     padding: 30px;
     text-align: center;
@@ -34,7 +34,7 @@ body {
 
 .search-section {
     padding: 30px;
-    background: #f8f9ff;
+    background: #ffffff;
     border-bottom: 1px solid #e0e6ff;
 }
 
@@ -70,7 +70,7 @@ body {
 .form-group input,
 .form-group select {
     padding: 12px;
-    border: 2px solid #e0e6ff;
+    border: 2px solid #e4e4e4;
     border-radius: 8px;
     font-size: 14px;
     transition: border-color 0.3s, box-shadow 0.3s;
@@ -84,9 +84,8 @@ body {
 }
 
 .search-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
+    color: #404040;
+    border: 2px solid #343434;
     padding: 12px 25px;
     border-radius: 8px;
     cursor: pointer;
@@ -97,7 +96,7 @@ body {
 
 .search-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 5px 15px rgb(95 95 95 / 40%);
 }
 
 .jobs-section {
@@ -111,7 +110,7 @@ body {
 
 .job-card {
     background: white;
-    border: 1px solid #e0e6ff;
+    border: 1px solid #b9b9b9;
     border-radius: 12px;
     padding: 25px;
     transition: transform 0.3s, box-shadow 0.3s;
@@ -126,7 +125,7 @@ body {
     left: 0;
     width: 4px;
     height: 100%;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background: linear-gradient(135deg, #3b3b3b 0%, #979797 100%);
 }
 
 .job-card:hover {
@@ -149,7 +148,7 @@ body {
 }
 
 .company-name {
-    color: #667eea;
+    color: #757575;
     font-weight: 600;
     font-size: 1.1rem;
 }
@@ -193,7 +192,7 @@ body {
 }
 
 .skill-tag {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #343434;
     color: white;
     padding: 4px 12px;
     border-radius: 20px;
@@ -216,9 +215,9 @@ body {
 }
 
 .apply-btn {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, #f2f2f2 0%, #ffffff 100%);
+    color: #247b00;
+    border: 2px solid;
     padding: 10px 20px;
     border-radius: 8px;
     cursor: pointer;
@@ -261,9 +260,9 @@ body {
 
 .page-btn:hover,
 .page-btn.active {
-    background: #667eea;
+    background: #565656;
     color: white;
-    border-color: #667eea;
+    border-color: #010101;
 }
 
 @media (max-width: 768px) {

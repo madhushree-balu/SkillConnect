@@ -96,6 +96,7 @@ def jobs():
     max_salary = request.args.get("max_salary")
     skills = request.args.get("skills")
     location = request.args.get("location")
+    applied = bool(request.args.get("applied", 0))
     
     # Convert string parameters to appropriate types
     min_experience = int(min_experience) if min_experience and min_experience.isdigit() else None
@@ -116,6 +117,15 @@ def jobs():
         skills=skills,
         location=location
     )
+    
+    applicationModels = models.Applications.getAll(freelancerId = get_jwt_identity().split(',')[0])
+    applicationIds = [ i.jobPostId for i in applicationModels ]
+    
+    print(jobs)
+    if applied:
+        jobs = [job for job in jobs if job.id in applicationIds]
+    else:
+        jobs = [job for job in jobs if job['id'] not in applicationIds]
     
     return render_template("/freelancer/jobs.html", jobs=jobs)
 

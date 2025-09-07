@@ -12,7 +12,7 @@
 
 .dashboard h1 {
     font-size: 2.5rem;
-    color: #2900bd;
+    color: #2f2f2f;
     margin-bottom: 10px;
     font-weight: 700;
 }
@@ -48,25 +48,11 @@
     gap: 15px;
     align-items: center;
     justify-content: center;
-}
-
-.links a {
-    display: inline-block;
-    padding: 15px 30px;
-    background: #2900bd;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 10px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    width: 250px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(41, 0, 189, 0.2);
+    transition: .3s;
 }
 
 .links a:hover {
-    background: #1f0099;
+    background: #484848;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(41, 0, 189, 0.3);
     color: #fff;
@@ -105,4 +91,34 @@
         width: 100%;
         padding: 12px 20px;
     }
+}
+
+section#page {
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 50px;
+}
+
+
+.main_content .links a {
+    border: 2px solid #343434;
+    padding: 5px 15px;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: .3s;
+}
+
+.dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.main_content {
+    gap: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }

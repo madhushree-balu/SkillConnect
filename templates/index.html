@@ -3,7 +3,7 @@
 {% block content %}
 
 <style>
-    /* Base section styling */
+      /* Base section styling */
     #profile,
     #educations,
     #experiences,
@@ -499,7 +499,7 @@
 
     body {
         background-color: hsla(132, 0%, 100%, 1);
-        background-image: radial-gradient(circle at 91% 11%, hsla(13, 100%, 88%, 0.66) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsla(323, 100%, 88%, 1) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsla(268, 100%, 88%, 1) 12.107536057085522%, transparent 63.33640956108327%);
+        background-image: radial-gradient(circle at 91% 11%, hsl(0deg 0% 82.72% / 66%) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsl(0deg 0% 100%) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsl(0deg 0% 80.92%) 12.107536057085522%, transparent 63.33640956108327%);
         background-blend-mode: normal, normal, normal;
     }
 
@@ -522,7 +522,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, var(--color-card) 0%, var(--color-background) 100%);
+        background: linear-gradient(135deg, var(--color-card) 0%, hsl(0deg 0% 100% / 0%) 100%);
         z-index: -1;
     }
 
@@ -533,7 +533,7 @@
         color: var(--color-foreground);
         letter-spacing: -0.025em;
         line-height: 1.1;
-        background: linear-gradient(135deg, var(--color-foreground), hsl(299.23deg 65.54% 62.26%));
+        background: linear-gradient(135deg, var(--color-foreground), hsl(0deg 0% 55.05%));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -829,6 +829,12 @@
         }
     }
 
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
     @keyframes fadeInUp {
         to {
             opacity: 1;

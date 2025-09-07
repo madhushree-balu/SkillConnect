@@ -48,6 +48,7 @@ def login_required(f):
     return decorated_function
 
 
+
 @recruiter.get("/")
 @login_required
 def index(recruiter):
@@ -63,17 +64,19 @@ def index(recruiter):
     
     # get all the job posts
     posts = models.JobPosts.getAll(recruiterId=recruiter.id)
-    
     companyPosts = {}
     
     for post in posts:
+        post_dict = post.model_dump()  # Convert to dictionary
         if post.companyId in companyPosts:
-            companyPosts[post.companyId].append(post)
+            companyPosts[post.companyId].append(post_dict)
         else:
-            companyPosts[post.companyId] = [post]
+            companyPosts[post.companyId] = [post_dict]
     
-    return render_template("/recruiter/index.html", recruiter=recruiter, companies=companies, companyPosts=companyPosts)
-
+    return render_template("/recruiter/index.html", 
+                         recruiter=recruiter.model_dump(), 
+                         companies=companies, 
+                         companyPosts=companyPosts)
 
 @recruiter.get("/login")
 def login():
@@ -95,7 +98,6 @@ def profile(recruiter):
 @login_required
 def create_company(recruiter):
     return render_template("/recruiter/create_company.html", recruiter=recruiter)
-
 
 @recruiter.get("/company/<id>")
 @login_required
@@ -124,8 +126,18 @@ def company(recruiter, id):
             recruiter_data["role"] = i.role
             recruiters[recruiter_obj.id] = recruiter_data
     
-    return render_template("/recruiter/company.html", recruiter=recruiter, rc=rc , company=companyModel, recruiters = recruiters)
-
+    # get all job posts for this company
+    companyPosts = models.JobPosts.getAll(companyId=id)
+    posts = []
+    for post in companyPosts:
+        posts.append(post.model_dump())
+    
+    return render_template("/recruiter/company.html", 
+                         recruiter=recruiter.model_dump(), 
+                         rc=rc.model_dump(), 
+                         company=companyModel.model_dump(), 
+                         recruiters=recruiters,
+                         posts=posts)
 
 @recruiter.get("/post/create")
 @login_required
