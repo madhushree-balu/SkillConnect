@@ -1,0 +1,124 @@
+{% extends '/base.html' %}
+
+{% block title %}Create New Company{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Create New Company</h1>
+
+    <section id="createCompany">
+        <h2>Company Details</h2>
+        
+        <div class="inputField">
+            <label for="username">Company Username:</label>
+            <input type="text" name="username" id="username" placeholder="Company Username">
+        </div>
+
+        <div class="inputField">
+            <label for="companyName">Company Name:</label>
+            <input type="text" name="companyName" id="companyName" placeholder="Company Name">
+        </div>
+
+        <div class="inputField">
+            <label for="companyPhone">Company Phone:</label>
+            <input type="text" name="companyPhone" id="companyPhone" placeholder="Company Phone">
+        </div>
+
+        <div class="inputField">
+            <label for="companyAddress">Company Address:</label>
+            <textarea name="companyAddress" id="companyAddress" placeholder="Company Address"></textarea>
+        </div>
+
+        <div class="inputField">
+            <label for="companyDescription">Company Description:</label>
+            <textarea name="companyDescription" id="companyDescription" placeholder="Company Description"></textarea>
+        </div>
+
+        <div class="inputField">
+            <label for="employeeSize">Employee Size:</label>
+            <input type="number" name="employeeSize" id="employeeSize" placeholder="Number of Employees" min="1">
+        </div>
+
+        <div class="buttons">
+            <button onclick="createCompany()" class="btn-primary">Create Company</button>
+            <button onclick="goBack()" class="btn-secondary">Cancel</button>
+        </div>
+    </section>
+
+    <script>
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+
+        function createCompany() {
+            const username = document.getElementById('username').value.trim();
+            const companyName = document.getElementById('companyName').value.trim();
+            const companyPhone = document.getElementById('companyPhone').value.trim();
+            const companyAddress = document.getElementById('companyAddress').value.trim();
+            const companyDescription = document.getElementById('companyDescription').value.trim();
+            const employeeSize = document.getElementById('employeeSize').value;
+
+            // Validation
+            if (!username || !companyName || !companyPhone || !companyAddress || !companyDescription || !employeeSize) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (parseInt(employeeSize) < 1) {
+                alert('Employee size must be at least 1');
+                return;
+            }
+
+            fetch("/api/recruiter/companies/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token")
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    username: username,
+                    companyName: companyName,
+                    companyPhone: companyPhone,
+                    companyAddress: companyAddress,
+                    companyDescription: companyDescription,
+                    employeeSize: parseInt(employeeSize)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Company created successfully!');
+                    window.location.href = '/recruiter';
+                } else {
+                    alert(data.error || 'Failed to create company');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to create company');
+            });
+        }
+
+        function goBack() {
+            window.location.href = '/recruiter';
+        }
+
+        // Add Enter key support
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('keyup', function(event) {
+                    if (event.key === 'Enter' && input.type !== 'textarea') {
+                        createCompany();
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

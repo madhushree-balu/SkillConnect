@@ -1,0 +1,184 @@
+/* Container styling matching reference design system */
+.container {
+    width: 400px;
+    min-height: 30vh;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    align-self: center;
+    gap: 50px;
+    padding: 1.5rem;
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease-in-out;
+    margin: 0 auto;
+}
+
+.container:hover {
+    box-shadow: var(--shadow);
+}
+
+/* Form styling matching reference patterns */
+form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    width: 260px;
+}
+
+/* Form field containers matching reference .inputField */
+form > div {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+/* Input styling using reference design system */
+input {
+    padding: 0.5rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid var(--color-input);
+    width: 100%;
+    font-size: 16px;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    transition: all 0.2s ease-in-out;
+    min-height: 2.5rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--color-ring);
+    box-shadow: 0 0 0 2px hsl(222.2 84% 4.9% / 0.2);
+}
+
+/* Submit button using reference button styling patterns */
+input[type="submit"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    padding: 5px 25px;
+    border: 2px solid #343434;
+    color: #3f3f3f;
+    background: #ffffff;
+    width: fit-content;
+    align-self: center;
+    min-height: auto;
+}
+
+input[type="submit"]:hover {
+    background: #8347ff;
+}
+
+input[type="submit"]:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-ring);
+}
+
+/* Paragraph styling */
+p {
+    padding-top: 20px;
+    font-size: 14px;
+    color: var(--color-muted-foreground);
+}
+
+/* Heading styling matching reference */
+#page h1 {
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--color-foreground);
+    letter-spacing: -0.025em;
+}
+
+/* Labels matching reference .inputField label */
+form > div label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-foreground);
+    line-height: 1;
+}
+
+/* Responsive design matching reference patterns */
+@media (max-width: 768px) {
+    .container {
+        width: calc(100% - 2rem);
+        padding: 1rem;
+        gap: 2rem;
+    }
+
+    form {
+        width: 100%;
+        max-width: 280px;
+    }
+
+    #page h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Using reference CSS custom properties */
+:root {
+    --color-background: hsl(0 0% 100%);
+    --color-foreground: hsl(222.2 84% 4.9%);
+    --color-card: hsl(0deg 0% 100% / 58%);
+    --color-card-foreground: hsl(222.2 84% 4.9%);
+    --color-primary: hsl(222.2 47.4% 11.2%);
+    --color-primary-foreground: hsl(210 40% 98%);
+    --color-secondary: hsl(210 40% 96%);
+    --color-secondary-foreground: hsl(222.2 84% 4.9%);
+    --color-muted: hsl(210 40% 96%);
+    --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+    --color-accent: hsl(210 40% 96%);
+    --color-accent-foreground: hsl(222.2 84% 4.9%);
+    --color-border: hsl(214.3 31.8% 91.4%);
+    --color-input: hsl(214.3 31.8% 91.4%);
+    --color-ring: hsl(222.2 84% 4.9%);
+    --color-destructive: hsl(0 84.2% 60.2%);
+    --color-destructive-foreground: hsl(210 40% 98%);
+    --color-success: hsl(142.1 76.2% 36.3%);
+    --color-success-foreground: hsl(355.7 100% 97.3%);
+    --radius: 0.5rem;
+    --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        "Noto Sans", sans-serif;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Base styling matching reference */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: hsla(132, 0%, 100%, 1);
+    background-image: radial-gradient(circle at 91% 11%, hsl(0deg 0% 100% / 66%) 4.038772213247173%, transparent 37.2265767974114%), radial-gradient(circle at 66% 37%, hsl(0deg 0% 100%) 0%, transparent 63.33640956108327%), radial-gradient(circle at 36% 87%, hsl(0deg 0% 83.84%) 12.107536057085522%, transparent 63.33640956108327%);
+    background-blend-mode: normal, normal, normal;
+}

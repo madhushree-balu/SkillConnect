@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Login{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Recruiter Login</h1>
+        <form id="loginForm">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div>
+                <input type="submit" value="Login">
+            </div>
+        </form>
+        
+        <div id="message" style="margin-top: 10px;"></div>
+        
+        <p>
+            Don't have an account? <a href="{{  url_for('recruiter.signup') }}">Sign Up</a> as a Recruiter!
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Clear previous messages
+            messageDiv.innerHTML = '';
+            
+            try {
+                const response = await fetch('{{  url_for("recruiter_api.login") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<p style="color: green;">' + data.message + '</p>';
+                    // Redirect to recruiter dashboard or home page
+                    setTimeout(() => {
+                        window.location.href = '/recruiter/';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<p style="color: red;">' + data.error + '</p>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<p style="color: red;">An error occurred. Please try again.</p>';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+{% endblock %}

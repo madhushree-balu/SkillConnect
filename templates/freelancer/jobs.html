@@ -1,0 +1,184 @@
+{% extends '/base.html' %}
+
+{% block title %}Freelancer Login{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='jobs.css') }}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Find Your Perfect Job</h1>
+            <p>Discover amazing opportunities that match your skills</p>
+        </div>
+        
+        <div class="search-section">
+            <form method="GET" action="/freelancer/jobs" class="search-form">
+                <div class="search-row">
+                    <div class="form-group">
+                        <label for="search">🔍 Search Jobs</label>
+                        <input type="text" id="search" name="search" placeholder="Enter job title, skills, or keywords..." value="{{ request.args.get('search', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="page">📄 Page</label>
+                        <input type="number" id="page" name="page" min="0" value="{{ request.args.get('page', 0) }}">
+                    </div>
+                    <div class="form-group">
+                        <label>&nbsp;</label>
+                        <button type="submit" class="search-btn">Search Jobs</button>
+                    </div>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="min_experience">💼 Min Experience (years)</label>
+                        <input type="number" id="min_experience" name="min_experience" min="0" value="{{ request.args.get('min_experience', '') }}" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_experience">📈 Max Experience (years)</label>
+                        <input type="number" id="max_experience" name="max_experience" min="0" value="{{ request.args.get('max_experience', '') }}" placeholder="20">
+                    </div>
+                    <div class="form-group">
+                        <label for="job_type">Application Status</label>
+                        <select id="job_type" name="job_type">
+                            <option value=0>Not Applied</option>
+                            <option value=1>Applied</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="job_type">⚡ Job Type</label>
+                        <select id="job_type" name="job_type">
+                            <option value="">All Types</option>
+                            <option value="FULL_TIME" {{ 'selected' if request.args.get('job_type') == 'FULL_TIME' }}>Full Time</option>
+                            <option value="PART_TIME" {{ 'selected' if request.args.get('job_type') == 'PART_TIME' }}>Part Time</option>
+                            <option value="CONTRACT" {{ 'selected' if request.args.get('job_type') == 'CONTRACT' }}>Contract</option>
+                            <option value="INTERNSHIP" {{ 'selected' if request.args.get('job_type') == 'INTERNSHIP' }}>Internship</option>
+                            <option value="FREELANCE" {{ 'selected' if request.args.get('job_type') == 'FREELANCE' }}>Freelance</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="company_name">🏢 Company</label>
+                        <input type="text" id="company_name" name="company_name" placeholder="Company name..." value="{{ request.args.get('company_name', '') }}">
+                    </div>
+                </div>
+                
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="min_salary">💰 Min Salary</label>
+                        <input type="number" id="min_salary" name="min_salary" min="0" step="1000" value="{{ request.args.get('min_salary', '') }}" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="max_salary">💎 Max Salary</label>
+                        <input type="number" id="max_salary" name="max_salary" min="0" step="1000" value="{{ request.args.get('max_salary', '') }}" placeholder="1000000">
+                    </div>
+                    <div class="form-group">
+                        <label for="skills">🎯 Skills</label>
+                        <input type="text" id="skills" name="skills" placeholder="Python, JavaScript, React..." value="{{ request.args.get('skills', '') }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">📍 Location</label>
+                        <input type="text" id="location" name="location" placeholder="City, State..." value="{{ request.args.get('location', '') }}">
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="jobs-section">
+            {% if jobs %}
+                <div class="jobs-grid">
+                    {% for job in jobs %}
+                    <div class="job-card">
+                        <div class="job-header">
+                            <div>
+                                <h3 class="job-title">{{ job['title'] }}</h3>
+                                <div class="company-name">{{ job['company_name'] if job['company_name'] else 'Company Name' }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="job-meta">
+                            <div class="meta-item">
+                                <span>💼</span>
+                                <span>{{ job['experience'] }} years experience</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⚡</span>
+                                <span>{{ job['jobType'].replace('_', ' ').title() }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📍</span>
+                                <span>{{ job['location'] }}</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>Posted: {{ job['postedOn'][:10] if job['postedOn'] else 'Recently' }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="job-description">
+                            {{ job['description'][:200] + '...' if job['description'] and job['description']|length > 200 else job['description'] }}
+                        </div>
+                        
+                        {% if job['skills'] %}
+                        <div class="skills-section">
+                            <div class="skills-title">Required Skills:</div>
+                            <div class="skills-list">
+                                {% for skill in job['skills'] %}
+                                    <span class="skill-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="job-footer">
+                            <div class="salary">₹{{ "{:,.0f}".format(job['salary']) if job['salary'] else 'Salary not disclosed' }}</div>
+                            <button class="apply-btn" onclick="applyForJob({{ job['id'] }})">Apply Now</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pagination -->
+                <div class="pagination">
+                    {% set current_page = request.args.get('page', 0)|int %}
+                    {% if current_page > 0 %}
+                        <a href="?{{ request.query_string.decode().replace('page=' + request.args.get('page', '0'), 'page=' + (current_page - 1)|string) }}" class="page-btn">← Previous</a>
+                    {% endif %}
+                    
+                    <span class="page-btn active">Page {{ current_page + 1 }}</span>
+                    
+                    {% if jobs|length == 10 %}
+                        <a href="?{{ request.query_string.decode() + ('&' if request.query_string else '') }}page={{ current_page + 1 }}" class="page-btn">Next →</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="no-jobs">
+                    <h3>😔 No jobs found</h3>
+                    <p>Try adjusting your search criteria or check back later for new opportunities.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function applyForJob(jobId) {
+            // You can implement the job application logic here
+            // For example, redirect to application form or show a modal
+            window.location.href = `/freelancer/apply/${jobId}`;
+        }
+        
+        // Auto-submit form when filters change (optional)
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.search-form');
+            const inputs = form.querySelectorAll('select');
+            
+            inputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    // Uncomment the line below if you want auto-submit on filter change
+                    // form.submit();
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% extends '/base.html' %}
+
+{% block title %}Apply for {{ job.title }} - {{ company.companyName }}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Apply for Job</h1>
+    
+    <!-- Job Details Section -->
+    <div class="job-details">
+        <h2>Job Details</h2>
+        <h3>{{ job.title }}</h3>
+        <p><strong>Company:</strong> {{ company.companyName }}</p>
+        <p><strong>Experience Required:</strong> {{ job.experience }} years</p>
+        <p><strong>Job Type:</strong> {{ job.jobType.replace('_', ' ').title() }}</p>
+        <p><strong>Location:</strong> {{ job.location }}</p>
+        <p><strong>Salary:</strong> ₹{{ "{:,.0f}".format(job.salary) if job.salary else 'Not disclosed' }}</p>
+        <p><strong>Posted On:</strong> {{ job.postedOn[:10] if job.postedOn else 'Recently' }}</p>
+        <p><strong>Valid Till:</strong> {{ job.validTill }}</p>
+        
+        <h4>Job Description:</h4>
+        <p>{{ job.description }}</p>
+    </div>
+    
+    <!-- Company Details Section -->
+    <div class="company-details">
+        <h2>Company Details</h2>
+        <h3>{{ company.companyName }}</h3>
+        <p><strong>Phone:</strong> {{ company.companyPhone }}</p>
+        <p><strong>Address:</strong> {{ company.companyAddress }}</p>
+        <p><strong>Employee Size:</strong> {{ company.employeeSize }} employees</p>
+        
+        <h4>About Company:</h4>
+        <p>{{ company.companyDescription }}</p>
+    </div>
+    
+    <!-- Skills Required Section -->
+    {% if job.skills %}
+    <div class="skills-section">
+        <h2>Skills Required</h2>
+        <ul>
+            {% for skill in job.skills %}
+                <li>
+                    {{ skill.skill }}
+                    {% if skill.isRequired %}
+                        <strong>(Required)</strong>
+                    {% else %}
+                        <em>(Preferred)</em>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
+    <!-- Application Form -->
+    <div class="application-form">
+        <h2>Submit Your Application</h2>
+        
+        <form action="{{ url_for('freelancer.apply_job', jobId=job.id) }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="freelancerId" value="{{ freelancer.id }}">
+            <!-- Resume Selection -->
+            <div class="resume-section">
+                <h3>Resume</h3>
+                
+                <!-- Option 1: Use existing resume -->
+                {% if resumes %}
+                <div>
+                    <input type="radio" id="existing_resume" name="resume_choice" value="existing" checked>
+                    <label for="existing_resume">Use existing resume:</label>
+                    <select name="existing_resume_id" id="existing_resume_select">
+                        <option value="">Select a resume...</option>
+                        {% for resume in resumes %}
+                            <option value="{{ resume.id }}">
+                                {{ resume.name }}
+                                ({{ (resume.fileSize / 1024)|round(1) }} KB)
+                                {% if resume.isDefault %} - Default {% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <br>
+                
+                <!-- Option 2: Upload new resume -->
+                <div>
+                    <input type="radio" id="new_resume" name="resume_choice" value="new">
+                    <label for="new_resume">Upload new resume:</label>
+                </div>
+                {% else %}
+                <!-- No existing resumes, force new upload -->
+                <input type="hidden" name="resume_choice" value="new">
+                <p><em>You don't have any saved resumes. Please upload a new one.</em></p>
+                {% endif %}
+                
+                <div id="new_resume_fields" style="display: {% if not resumes %}block{% else %}none{% endif %};">
+                    <p>
+                        <label for="resume_name">Resume Name:</label><br>
+                        <input type="text" id="resume_name" name="resume_name" placeholder="Enter a name for your resume">
+                    </p>
+                    <p>
+                        <label for="resume_file">Select Resume File (PDF recommended):</label><br>
+                        <input type="file" id="resume_file" name="resume_file" accept=".pdf,.doc,.docx">
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Cover Letter -->
+            <div class="cover-letter-section">
+                <h3>Cover Letter</h3>
+                <p>
+                    <label for="cover_letter">Write your cover letter (optional):</label><br>
+                    <textarea id="cover_letter" name="cover_letter" rows="10" cols="80" 
+                              placeholder="Dear Hiring Manager,&#10;&#10;I am writing to express my interest in the {{ job.title }} position at {{ company.companyName }}..."></textarea>
+                </p>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="submit-section">
+                <p>
+                    <button type="submit">Submit Application</button>
+                    <a href="{{ url_for('freelancer.jobs') }}">Cancel</a>
+                </p>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        // Show/hide new resume fields based on radio button selection
+        const existingResumeRadio = document.getElementById('existing_resume');
+        const newResumeRadio = document.getElementById('new_resume');
+        const newResumeFields = document.getElementById('new_resume_fields');
+        const existingResumeSelect = document.getElementById('existing_resume_select');
+        
+        function toggleResumeFields() {
+            if (newResumeRadio && newResumeRadio.checked) {
+                newResumeFields.style.display = 'block';
+                if (existingResumeSelect) {
+                    existingResumeSelect.required = false;
+                }
+                document.getElementById('resume_file').required = true;
+            } else if (existingResumeRadio && existingResumeRadio.checked) {
+                newResumeFields.style.display = 'none';
+                if (existingResumeSelect) {
+                    existingResumeSelect.required = true;
+                }
+                document.getElementById('resume_file').required = false;
+            }
+        }
+        
+        if (existingResumeRadio) {
+            existingResumeRadio.addEventListener('change', toggleResumeFields);
+        }
+        if (newResumeRadio) {
+            newResumeRadio.addEventListener('change', toggleResumeFields);
+        }
+        
+        // Set initial state
+        toggleResumeFields();
+        
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const resumeChoice = document.querySelector('input[name="resume_choice"]');
+            
+            if (!resumeChoice) {
+                alert('Please select a resume option');
+                e.preventDefault();
+                return;
+            }
+            
+            if (resumeChoice.value === 'existing') {
+                const existingResumeId = document.getElementById('existing_resume_select').value;
+                if (!existingResumeId) {
+                    alert('Please select an existing resume');
+                    e.preventDefault();
+                    return;
+                }
+            } else if (resumeChoice.value === 'new') {
+                const resumeFile = document.getElementById('resume_file').files[0];
+                if (!resumeFile) {
+                    alert('Please select a resume file to upload');
+                    e.preventDefault();
+                    return;
+                }
+                
+                // Check file size (limit to 10MB)
+                if (resumeFile.size > 10 * 1024 * 1024) {
+                    alert('Resume file size should not exceed 10MB');
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+    </script>
+
+{% endblock %}

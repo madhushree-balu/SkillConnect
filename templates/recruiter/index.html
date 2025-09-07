@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Recruiter Dashboard</h1>
+    <p>Welcome, {{ recruiter['username'] }}!</p>
+
+    <div class="header">
+        <div class="actions">
+            <a href="/recruiter/company/create" class="btn btn-primary">Create New Company</a>
+            <a href="/recruiter/post/create" class="btn btn-success">Create New Post</a>
+            <button onclick="logout()" class="btn btn-danger">Logout</button>
+        </div>
+    </div>
+
+    <!-- Companies and Their Job Posts Section -->
+    <section id="companies-with-posts">
+        <h2>My Companies and Job Posts</h2>
+        <div class="container" id="companiesContainer">
+            {% for company_id, company in companies.items() %}
+                <div class="company-section">
+                    <!-- Company Header -->
+                    <div class="company-header">
+                        <a href="/recruiter/company/{{ company['id'] }}" class="company-link">
+                            <div class="company">
+                                <h3>{{ company['companyName'] }}</h3>
+                                <p class="company-description">{{ company['companyDescription'] }}</p>
+                                <div class="company-details">
+                                    <span>📞 {{ company['companyPhone'] }}</span>
+                                    <span>📍 {{ company['companyAddress'] }}</span>
+                                    <span>👥 {{ company['employeeSize'] }} employees</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Company's Job Posts -->
+                    <div class="company-posts">
+                        {% if company_id|int in companyPosts %}
+                            <h4>Job Posts ({{ companyPosts[company_id|int]|length }})</h4>
+                            <div class="posts-grid">
+                                {% for post in companyPosts[company_id|int] %}
+                                    <a href="/recruiter/post/{{ post['id'] }}" class="post-link">
+                                        <div class="post">
+                                            <h5>{{ post['title'] }}</h5>
+                                            <p class="post-description">{{ post['description'][:100] }}{% if post['description']|length > 100 %}...{% endif %}</p>
+                                            <div class="post-meta">
+                                                <span class="salary">💰 {{ post['salary'] }}</span>
+                                                <span class="job-type">🏷️ {{ post['jobType'] }}</span>
+                                                <span class="location">📍 {{ post['location'] }}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="no-posts">
+                                <p>No job posts for this company yet.</p>
+                                <a href="/recruiter/post/create" class="btn btn-sm">Create First Post</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-companies">
+                    <h3>No companies found</h3>
+                    <p>You haven't created or joined any companies yet.</p>
+                    <a href="/recruiter/company/create" class="btn btn-primary">Create Your First Company</a>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <script>
+        function logout() {
+            fetch("/api/recruiter/logout", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token")
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Logged out successfully!');
+                    window.location.href = './login';
+                } else {
+                    alert('Logout failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Logout failed');
+            });
+        }
+
+        // Helper function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+{% endblock %}

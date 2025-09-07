@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Recruiter Signup{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<body>
+    <div class="container">
+        <h1>Recruiter Signup</h1>
+        <form id="signupForm">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password (min 8 characters)" required>
+            </div>
+
+            <div>
+                <input type="submit" value="Sign Up">
+            </div>
+        </form>
+        
+        <div id="message" style="margin-top: 10px;"></div>
+        
+        <p>
+            Already have an account? <a href="{{ url_for('recruiter.login') }}">Login</a> as a Recruiter!
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            // Clear previous messages
+            messageDiv.innerHTML = '';
+            
+            // Basic client-side validation
+            if (password.length < 8) {
+                messageDiv.innerHTML = '<p style="color: red;">Password must be at least 8 characters long.</p>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('{{ url_for("recruiter_api.signup") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.innerHTML = '<p style="color: green;">' + data.message + '</p>';
+                    // Redirect to recruiter dashboard or home page
+                    setTimeout(() => {
+                        window.location.href = '/recruiter/';
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<p style="color: red;">' + data.error + '</p>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<p style="color: red;">An error occurred. Please try again.</p>';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+{% endblock %}

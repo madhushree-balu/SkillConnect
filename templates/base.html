@@ -1,0 +1,41 @@
+<!doctype html>
+
+<head>
+    <title>{% block title %}{% endblock %} - Skill Connect</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <nav>
+        <h1>Skill Connect</h1>
+        {% if freelancer %}
+            <ul>
+                <li><a href="{{  url_for('freelancer.profile')  }}">Profile</a>
+                <li><a href="{{  url_for('freelancer.jobs')  }}">Jobs</a>
+                <li><a href="{{  url_for('freelancer.applications')  }}">Applications</a>
+            </ul>
+        {% elif recruiter %}
+            <ul>
+                <li><a href="{{  url_for('recruiter.index')  }}">Dashboard</a>
+                <li><a href="{{  url_for('recruiter.create_post')  }}">New Post</a>
+            </ul>
+        {% else %}
+            <ul>
+                <li><a href="{{  url_for('freelancer.login')  }}">Freelancer Login</a>
+                <li><a href="{{  url_for('recruiter.login')  }}">Recruiter Login</a>
+            </ul>
+        {% endif %}
+    </nav>
+    
+    <div id="notifications">
+        {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+        {% endfor %}
+    </div>
+
+    <section id="page">
+        {% block content %}{% endblock %}
+    </section>
+</body>
+{% block scripts %}{% endblock %}
+</html>

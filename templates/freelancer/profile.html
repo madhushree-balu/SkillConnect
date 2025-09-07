@@ -1,0 +1,616 @@
+{% extends '/base.html' %}
+
+{% block title %}Freelancer Login{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<body>
+    <h1>Freelancer Profile</h1>
+
+    <!-- Profile Details Section -->
+    <section id="profile">
+        <h2>Profile Details</h2>
+        
+        <div class="nameField">
+            <input type="text" name="firstName" id="firstName" placeholder="First Name">
+            <input type="text" name="middleName" id="middleName" placeholder="Middle Name">
+            <input type="text" name="lastName" id="lastName" placeholder="Last Name">
+        </div>
+
+        <div class="inputField">
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="text" name="phoneNumber" id="phoneNumber" placeholder="Phone Number">
+        </div>
+
+        <div class="inputField">
+            <label for="contactEmail">Contact Email:</label>
+            <input type="email" name="contactEmail" id="contactEmail" placeholder="Contact Email">
+        </div>
+
+        <div class="inputField">
+            <label for="about">About:</label>
+            <textarea name="about" id="about" placeholder="About yourself"></textarea>
+        </div>
+
+        <div class="inputField">
+            <label for="dateOfBirth">Date of Birth:</label>
+            <input type="date" name="dateOfBirth" id="dateOfBirth">
+        </div>
+
+        <div class="inputField">
+            <label for="address">Address:</label>
+            <input type="text" name="address" id="address" placeholder="Address">
+        </div>
+
+        <div class="buttons">
+            <button class="saveProfile" onclick="saveProfile()">Save Profile</button>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="educations">
+        <div class="top">
+            <h2>Education</h2>
+            <button id="addEducation" onclick="addEducation()">Add Education</button>
+        </div>
+
+        <div class="container" id="educationContainer">
+            <!-- Education entries will be dynamically added here -->
+        </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experiences">
+        <div class="top">
+            <h2>Experience</h2>
+            <button id="addExperience" onclick="addExperience()">Add Experience</button>
+        </div>
+
+        <div class="container" id="experienceContainer">
+            <!-- Experience entries will be dynamically added here -->
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills">
+        <div class="top">
+            <h2>Skills</h2>
+        </div>
+        
+        <div class="skillInput">
+            <input type="text" name="newSkill" id="newSkill" placeholder="Enter skill">
+            <select name="proficiencyLevel" id="proficiencyLevel">
+                <!-- BEGINNER, INTERMEDIATE, ADVANCED, EXPERT -->
+                <option value="BEGINNER">BEGINNER</option>
+                <option value="INTERMEDIATE">INTERMEDIATE</option>
+                <option value="ADVANCED">ADVANCED</option>
+                <option value="EXPERT">EXPERT</option>
+            </select>
+            <input type="number" name="yearsOfExperience" id="yearsOfExperience" placeholder="Years of Experience" min="0">
+            <button id="addSkill" onclick="addSkill()">Add Skill</button>
+        </div>
+        
+        <div class="container" id="skillContainer">
+            <!-- Skills will be dynamically added here -->
+        </div>
+    </section>
+
+
+
+    <!-- THE SCRIPTS -->
+    <script>
+        // Load profile data on page load
+        function getCookie(name) {
+            let value = `; ${document.cookie}`;
+            let parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(";").shift();
+        }
+        window.onload = function() {
+            loadProfile();
+        };
+
+        function loadProfile() {
+            fetch("/api/freelancer/profile", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.freelancerDetails) {
+                    const details = data.freelancerDetails;
+                    document.getElementById('firstName').value = details.firstName || '';
+                    document.getElementById('middleName').value = details.middleName || '';
+                    document.getElementById('lastName').value = details.lastName || '';
+                    document.getElementById('phoneNumber').value = details.phoneNumber || '';
+                    document.getElementById('contactEmail').value = details.contactEmail || '';
+                    document.getElementById('about').value = details.about || '';
+                    document.getElementById('dateOfBirth').value = details.dateOfBirth || '';
+                    document.getElementById('address').value = details.address || '';
+                }
+                
+                if (data.educations) {
+                    data.educations.forEach(education => {
+                        addEducationToDOM(education);
+                    });
+                }
+                
+                if (data.experiences) {
+                    data.experiences.forEach(experience => {
+                        addExperienceToDOM(experience);
+                    });
+                }
+                
+                if (data.skills) {
+                    data.skills.forEach(skill => {
+                        addSkillToDOM(skill);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading profile:', error);
+                alert('Failed to load profile data');
+            });
+        }
+
+        function saveProfile() {
+            const firstName = document.getElementById('firstName').value;
+            const middleName = document.getElementById('middleName').value;
+            const lastName = document.getElementById('lastName').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const contactEmail = document.getElementById('contactEmail').value;
+            const about = document.getElementById('about').value;
+            const dateOfBirth = document.getElementById('dateOfBirth').value;
+            const address = document.getElementById('address').value;
+
+            fetch("/api/freelancer/profile/details/update", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    firstName: firstName,
+                    middleName: middleName,
+                    lastName: lastName,
+                    phoneNumber: phoneNumber,
+                    contactEmail: contactEmail,
+                    about: about,
+                    dateOfBirth: dateOfBirth,
+                    address: address
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Profile saved successfully!');
+                } else {
+                    alert(data.error || 'Failed to save profile');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to save profile');
+            });
+        }
+
+        function addEducation() {
+            fetch("/api/freelancer/profile/educations/add", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    school: "",
+                    degree: "",
+                    startDate: "",
+                    endDate: "",
+                    cgpa: "",
+                    course: ""
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Education added successfully! Please refresh to see the new entry.');
+                    loadProfile(); // Reload to get the new education with ID
+                } else {
+                    alert(data.error || 'Failed to add education');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add education');
+            });
+        }
+
+        function addEducationToDOM(education) {
+            const container = document.getElementById('educationContainer');
+            const educationDiv = document.createElement('div');
+            educationDiv.className = 'educationField';
+            educationDiv.setAttribute('educationId', education.id);
+            
+            educationDiv.innerHTML = `
+                <div class="educationContainer">
+                    <div class="inputField">
+                        <label>School:</label>
+                        <input type="text" class="school" value="${education.school || ''}" placeholder="School">
+                    </div>
+                    <div class="inputField">
+                        <label>Degree:</label>
+                        <input type="text" class="degree" value="${education.degree || ''}" placeholder="Degree">
+                    </div>
+                    <div class="inputField">
+                        <label>Course:</label>
+                        <input type="text" class="course" value="${education.course || ''}" placeholder="Course/Field of Study">
+                    </div>
+                    <div class="inputField">
+                        <label>Start Date:</label>
+                        <input type="date" class="startDate" value="${education.startDate || ''}">
+                    </div>
+                    <div class="inputField">
+                        <label>End Date:</label>
+                        <input type="date" class="endDate" value="${education.endDate || ''}">
+                    </div>
+                    <div class="inputField">
+                        <label>CGPA:</label>
+                        <input type="number" class="cgpa" value="${education.cgpa || ''}" placeholder="CGPA" step="0.01">
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button onclick="saveEducation(${education.id})">Save</button>
+                    <button onclick="removeEducation(${education.id})">Remove</button>
+                </div>
+            `;
+            
+            container.appendChild(educationDiv);
+        }
+
+        function saveEducation(educationId) {
+            const educationDiv = document.querySelector(`[educationId="${educationId}"]`);
+            const school = educationDiv.querySelector('.school').value;
+            const degree = educationDiv.querySelector('.degree').value;
+            const course = educationDiv.querySelector('.course').value;
+            const startDate = educationDiv.querySelector('.startDate').value;
+            const endDate = educationDiv.querySelector('.endDate').value;
+            const cgpa = educationDiv.querySelector('.cgpa').value;
+
+            fetch("/api/freelancer/profile/educations/update", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    id: educationId,
+                    school: school,
+                    degree: degree,
+                    course: course,
+                    startDate: startDate,
+                    endDate: endDate,
+                    cgpa: parseFloat(cgpa) || null
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Education saved successfully!');
+                } else {
+                    alert(data.error || 'Failed to save education');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to save education');
+            });
+        }
+
+        function removeEducation(educationId) {
+            if (!confirm('Are you sure you want to remove this education?')) {
+                return;
+            }
+
+            fetch("/api/freelancer/profile/educations/delete", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    id: educationId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.querySelector(`[educationId="${educationId}"]`).remove();
+                    alert('Education removed successfully!');
+                } else {
+                    alert(data.error || 'Failed to remove education');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to remove education');
+            });
+        }
+
+        function addExperience() {
+            fetch("/api/freelancer/profile/experiences/add", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    company: "",
+                    role: "",
+                    startDate: "",
+                    endDate: "",
+                    description: ""
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Experience added successfully! Please refresh to see the new entry.');
+                    loadProfile(); // Reload to get the new experience with ID
+                } else {
+                    alert(data.error || 'Failed to add experience');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add experience');
+            });
+        }
+
+        function addExperienceToDOM(experience) {
+            const container = document.getElementById('experienceContainer');
+            const experienceDiv = document.createElement('div');
+            experienceDiv.className = 'experienceField';
+            experienceDiv.setAttribute('experienceId', experience.id);
+            
+            experienceDiv.innerHTML = `
+                <div class="experienceContainer">
+                    <div class="inputField">
+                        <label>Company:</label>
+                        <input type="text" class="company" value="${experience.companyName || ''}" placeholder="Company">
+                    </div>
+                    <div class="inputField">
+                        <label>Role:</label>
+                        <input type="text" class="role" value="${experience.role || ''}" placeholder="Position/Role">
+                    </div>
+                    <div class="inputField">
+                        <label>Start Date:</label>
+                        <input type="date" class="startDate" value="${experience.startDate || ''}">
+                    </div>
+                    <div class="inputField">
+                        <label>End Date:</label>
+                        <input type="date" class="endDate" value="${experience.endDate || ''}">
+                    </div>
+                    <div class="inputField">
+                        <label>Description:</label>
+                        <textarea class="description" placeholder="Job description">${experience.description || ''}</textarea>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button onclick="saveExperience(${experience.id})">Save</button>
+                    <button onclick="removeExperience(${experience.id})">Remove</button>
+                </div>
+            `;
+            
+            container.appendChild(experienceDiv);
+        }
+
+        function saveExperience(experienceId) {
+            const experienceDiv = document.querySelector(`[experienceId="${experienceId}"]`);
+            const company = experienceDiv.querySelector('.company').value;
+            const role = experienceDiv.querySelector('.role').value;
+            const startDate = experienceDiv.querySelector('.startDate').value;
+            const endDate = experienceDiv.querySelector('.endDate').value;
+            const description = experienceDiv.querySelector('.description').value;
+
+            fetch("/api/freelancer/profile/experiences/update", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    id: experienceId,
+                    company: company,
+                    role: role,
+                    startDate: startDate,
+                    endDate: endDate,
+                    description: description
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Experience saved successfully!');
+                } else {
+                    alert(data.error || 'Failed to save experience');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to save experience');
+            });
+        }
+
+        function removeExperience(experienceId) {
+            if (!confirm('Are you sure you want to remove this experience?')) {
+                return;
+            }
+
+            fetch("/api/freelancer/profile/experiences/delete", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    id: experienceId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.querySelector(`[experienceId="${experienceId}"]`).remove();
+                    alert('Experience removed successfully!');
+                } else {
+                    alert(data.error || 'Failed to remove experience');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to remove experience');
+            });
+        }
+
+        function addSkill() {
+            const skillName = document.getElementById('newSkill').value.trim();
+            const proficiencyLevel = document.getElementById('proficiencyLevel').value;
+            const yearsOfExperience = document.getElementById('yearsOfExperience').value;
+
+            if (!skillName) {
+                alert('Please enter a skill name');
+                return;
+            }
+
+            if (!proficiencyLevel || proficiencyLevel < 1 || proficiencyLevel > 10) {
+                alert('Please enter a valid proficiency level (1-10)');
+                return;
+            }
+
+            // First, we need to create/find the skill, then add it to freelancer skills
+            // Note: This assumes you have a way to handle skill creation in your backend
+            fetch("/api/freelancer/profile/skills/add", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    skillName: skillName, // This might need adjustment based on your backend
+                    proficiencyLevel: proficiencyLevel,
+                    yearsOfExperience: parseInt(yearsOfExperience) || 0
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert('Skill added successfully!');
+                    document.getElementById('newSkill').value = '';
+                    document.getElementById('proficiencyLevel').value = '';
+                    document.getElementById('yearsOfExperience').value = '';
+                    loadProfile(); // Reload to show the new skill
+                } else {
+                    alert(data.error || 'Failed to add skill');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to add skill');
+            });
+        }
+
+        function addSkillToDOM(skillData) {
+            const container = document.getElementById('skillContainer');
+            const skillDiv = document.createElement('div');
+            skillDiv.className = 'skillField';
+            skillDiv.setAttribute('skillId', skillData.skill.id);
+            
+            skillDiv.innerHTML = `
+                <div class="skillInfo">
+                    <strong>${skillData.skill.name || skillData.skill.skill}</strong>
+                    <span>Proficiency: ${skillData.proficiencyLevel}</span>
+                    <span>Experience: ${skillData.yearsOfExperience} years</span>
+                </div>
+                <div class="skillRemove">
+                    <button onclick="removeSkill(${skillData.skill.id})">Remove</button>
+                </div>
+            `;
+            
+            container.appendChild(skillDiv);
+        }
+
+        function removeSkill(skillId) {
+            if (!confirm('Are you sure you want to remove this skill?')) {
+                return;
+            }
+
+            fetch("/api/freelancer/profile/skills/delete", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    // If CSRF is enabled, also send the csrf token
+                    "X-CSRF-TOKEN": getCookie("csrf_access_token") 
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    skillId: skillId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.message) {
+                    document.querySelector(`[skillId="${skillId}"]`).remove();
+                    alert('Skill removed successfully!');
+                } else {
+                    alert(data.error || 'Failed to remove skill');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to remove skill');
+            });
+        }
+
+        // Add Enter key support for skill input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('newSkill').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    addSkill();
+                }
+            });
+        });
+    </script>
+</body>
+
+{% endblock %}
