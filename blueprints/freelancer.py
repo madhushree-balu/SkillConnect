@@ -83,6 +83,22 @@ def profile():
 @freelancer.get("/jobs")
 @jwt_required()
 def jobs():
+    cookie = get_jwt_identity()
+    current_user_id = int(cookie.split(',')[0])
+    
+    if not cookie:
+        print("no cookie")
+        return redirect(url_for("freelancer.login"))
+    
+    if cookie.split(',')[-1] != "freelancer":
+        return redirect(url_for("freelancer.login"))
+    
+    freelancer = models.Freelancers.get(id=current_user_id)
+    
+    if not freelancer:
+        print("no freelancer")
+        return redirect(url_for("freelancer.login"))
+    
     # Get search parameters from request args
     search = request.args.get("search", "")
     page = int(request.args.get("page", 0))
@@ -118,7 +134,7 @@ def jobs():
         location=location
     )
     
-    applicationModels = models.Applications.getAll(freelancerId = get_jwt_identity().split(',')[0])
+    applicationModels = models.Applications.getAll(freelancerId = freelancer.id)
     applicationIds = [ i.jobPostId for i in applicationModels ]
     
     print(jobs)
@@ -127,7 +143,7 @@ def jobs():
     else:
         jobs = [job for job in jobs if job['id'] not in applicationIds]
     
-    return render_template("/freelancer/jobs.html", jobs=jobs)
+    return render_template("/freelancer/jobs.html", freelancer=freelancer, jobs=jobs)
 
 
 

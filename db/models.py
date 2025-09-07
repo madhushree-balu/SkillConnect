@@ -504,3 +504,4 @@ class Applications(DataModel):  # Changed from JunctionModel to DataModel
         # Exclude all auto-generated fields for Applications
         data = self.model_dump(exclude={"id", "createdAt", "updatedAt", "appliedOn"})
         return execute(insertQueries[self.tableName], list(data.values()))
+    

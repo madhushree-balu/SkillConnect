@@ -1,8 +1,9 @@
 from functools import wraps
+from io import BytesIO
 from flask import (
     Blueprint, request,
     redirect, flash,
-    url_for, render_template
+    url_for, render_template, send_file
 )
 from flask_jwt_extended import (
     jwt_required, 
@@ -185,7 +186,21 @@ def post(recruiter, id):
         if freelancer:
             i = i.model_dump()
             i['freelancer'] = freelancer.model_dump()
+            i['resume'] = models.Resumes.get(freelancerId=i['resumeId'])
+            if not i['resume']:
+                continue
+            i['resume'] = i['resume'].model_dump()
             applications.append(i)
     
     return render_template("/recruiter/post.html",recruiter=recruiter , post=post, skills=skills, applications=applications)
 
+
+@recruiter.get("/download_resume/<resumeId>")
+@login_required
+def download_resume(recruiter, resumeId):
+    resume = models.Resumes.get(id=resumeId)
+    if not resume:
+        flash("Resume not found", "error")
+        return redirect(url_for("recruiter.index"))
+    
+    return send_file(BytesIO(resume.pdfData), download_name=resume.name + ".pdf", mimetype="application/pdf", as_attachment=True)
