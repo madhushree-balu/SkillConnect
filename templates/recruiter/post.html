@@ -186,7 +186,7 @@
                                     {{ application['status'].replace('_', ' ') }}
                                 </span>
                             </p>
-                            <p><strong>Resume:</strong> {{ application['resume'] }}</p>
+                            <p><strong>Resume:</strong> <a href="{{ url_for('recruiter.download_resume', resumeId=application['resumeId']) }}">Download</a></p>
                             <p><strong>Cover Letter:</strong> {{ application['coverLetter'] or 'Not provided' }}</p>
                             
                             <!-- Application Action Buttons -->

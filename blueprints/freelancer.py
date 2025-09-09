@@ -83,26 +83,60 @@ def profile():
 @freelancer.get("/jobs")
 @jwt_required()
 def jobs():
+    cookie = get_jwt_identity()
+    current_user_id = int(cookie.split(',')[0])
+    
+    if not cookie:
+        print("no cookie")
+        return redirect(url_for("freelancer.login"))
+    
+    if cookie.split(',')[-1] != "freelancer":
+        return redirect(url_for("freelancer.login"))
+    
+    freelancer = models.Freelancers.get(id=current_user_id)
+    
+    if not freelancer:
+        print("no freelancer")
+        return redirect(url_for("freelancer.login"))
+    
     # Get search parameters from request args
     search = request.args.get("search", "")
     page = int(request.args.get("page", 0))
     
     # Get filter parameters
-    min_experience = request.args.get("min_experience")
-    max_experience = request.args.get("max_experience")
-    job_type = request.args.get("job_type")
-    company_name = request.args.get("company_name")
-    min_salary = request.args.get("min_salary")
-    max_salary = request.args.get("max_salary")
-    skills = request.args.get("skills")
-    location = request.args.get("location")
-    applied = bool(request.args.get("applied", 0))
+    min_experience = request.args.get("min_experience", None)
+    max_experience = request.args.get("max_experience", None)
+    job_type = request.args.get("job_type", None)
+    job_type = job_type if job_type != "" else None
+    company_name = request.args.get("company_name", None)
+    min_salary = request.args.get("min_salary", None)
+    max_salary = request.args.get("max_salary", None)
+    skills = request.args.get("skills", None)
+    skills = skills if skills != "" else None
+    location = request.args.get("location", None)
+    location = location if location != "" else None
+    applied = request.args.get("applied", None)
+    applied = applied == "1"
     
     # Convert string parameters to appropriate types
     min_experience = int(min_experience) if min_experience and min_experience.isdigit() else None
     max_experience = int(max_experience) if max_experience and max_experience.isdigit() else None
     min_salary = float(min_salary) if min_salary and min_salary.replace('.', '').isdigit() else None
     max_salary = float(max_salary) if max_salary and max_salary.replace('.', '').isdigit() else None
+    
+    print(f"""
+        {search=},
+        {page=},
+        {min_experience=},
+        {max_experience=},
+        {job_type=},
+        {company_name=},
+        {min_salary=},
+        {max_salary=},
+        {skills=},
+        {location=}"""
+    )
+    
     
     # Perform search with all filters
     jobs = models.JobPosts.search(
@@ -118,16 +152,25 @@ def jobs():
         location=location
     )
     
-    applicationModels = models.Applications.getAll(freelancerId = get_jwt_identity().split(',')[0])
+    applicationModels = models.Applications.getAll(freelancerId = freelancer.id)
     applicationIds = [ i.jobPostId for i in applicationModels ]
     
-    print(jobs)
+    print("applied", applied, "jobs", jobs, "applicationIds", applicationIds)
+    njobs = []
     if applied:
-        jobs = [job for job in jobs if job.id in applicationIds]
+        for job in jobs:
+            print("Applid is true")
+            # print(job['id'], applicationIds)
+            if job['id'] in applicationIds:
+                njobs.append(job)
     else:
-        jobs = [job for job in jobs if job['id'] not in applicationIds]
+        for job in jobs:
+            # print(job['id'], applicationIds)
+            if job['id'] not in applicationIds:
+                njobs.append(job)
+    print(njobs)
     
-    return render_template("/freelancer/jobs.html", jobs=jobs)
+    return render_template("/freelancer/jobs.html", freelancer=freelancer, jobs=njobs)
 
 
 
@@ -283,6 +326,12 @@ def application_status(jobId):
     
     if cookie.split(',')[-1] != "freelancer":
         return redirect(url_for("freelancer.login"))
+    
+    freelancer = models.Freelancers.get(id=current_user_id)
+    
+    if not freelancer:
+        print("no freelancer")
+        return redirect(url_for("freelancer.login"))
 
     # Get application details
     application = models.Applications.get(jobPostId=jobId, freelancerId=current_user_id)
@@ -306,10 +355,11 @@ def application_status(jobId):
                          application=application,
                          job=job, 
                          company=company,
-                         resume=resume)
+                         resume=resume,
+                         freelancer=freelancer)
 
 
-@freelancer.route("applications")
+@freelancer.route("/applications")
 @jwt_required()
 def applications():
     cookie = get_jwt_identity()
@@ -320,6 +370,12 @@ def applications():
         return redirect(url_for("freelancer.login"))
     
     if cookie.split(',')[-1] != "freelancer":
+        return redirect(url_for("freelancer.login"))
+
+    freelancer = models.Freelancers.get(id=current_user_id)
+    
+    if not freelancer:
+        print("no freelancer")
         return redirect(url_for("freelancer.login"))
 
     # Get all applications for the current user
@@ -356,4 +412,4 @@ def applications():
     # Sort by application date (most recent first)
     enhanced_applications.sort(key=lambda x: x['application'].appliedOn or '0000-00-00', reverse=True)
     
-    return render_template("/freelancer/applications.html", applications=enhanced_applications)
+    return render_template("/freelancer/applications.html", applications=enhanced_applications, freelancer=freelancer)
