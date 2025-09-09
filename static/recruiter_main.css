@@ -380,10 +380,7 @@ button.btn-secondary:hover {
     gap: 0.5rem;
 }
 
-.company h3::before {
-    content: '🏢';
-    font-size: 1.2rem;
-}
+
 
 .company > div {
     display: flex;
@@ -477,11 +474,6 @@ button.btn-secondary:hover {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-}
-
-.post h3::before {
-    content: '💼';
-    font-size: 1.2rem;
 }
 
 .post p {

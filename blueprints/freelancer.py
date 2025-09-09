@@ -326,6 +326,12 @@ def application_status(jobId):
     
     if cookie.split(',')[-1] != "freelancer":
         return redirect(url_for("freelancer.login"))
+    
+    freelancer = models.Freelancers.get(id=current_user_id)
+    
+    if not freelancer:
+        print("no freelancer")
+        return redirect(url_for("freelancer.login"))
 
     # Get application details
     application = models.Applications.get(jobPostId=jobId, freelancerId=current_user_id)
@@ -349,10 +355,11 @@ def application_status(jobId):
                          application=application,
                          job=job, 
                          company=company,
-                         resume=resume)
+                         resume=resume,
+                         freelancer=freelancer)
 
 
-@freelancer.route("applications")
+@freelancer.route("/applications")
 @jwt_required()
 def applications():
     cookie = get_jwt_identity()
@@ -363,6 +370,12 @@ def applications():
         return redirect(url_for("freelancer.login"))
     
     if cookie.split(',')[-1] != "freelancer":
+        return redirect(url_for("freelancer.login"))
+
+    freelancer = models.Freelancers.get(id=current_user_id)
+    
+    if not freelancer:
+        print("no freelancer")
         return redirect(url_for("freelancer.login"))
 
     # Get all applications for the current user
@@ -399,4 +412,4 @@ def applications():
     # Sort by application date (most recent first)
     enhanced_applications.sort(key=lambda x: x['application'].appliedOn or '0000-00-00', reverse=True)
     
-    return render_template("/freelancer/applications.html", applications=enhanced_applications)
+    return render_template("/freelancer/applications.html", applications=enhanced_applications, freelancer=freelancer)

@@ -2,273 +2,371 @@
 
 {% block title %}Your Application {% endblock %}
 
+{% block head %}
+
+{% endblock %}
+
 {% block content %}
-    <h1>My Job Applications</h1>
-    
-    <div class="header-actions">
-        <p>
-            <a href="{{ url_for('freelancer.jobs') }}">← Back to Job Search</a> | 
-            <a href="{{ url_for('freelancer.index') if url_for('freelancer.index') else '#' }}">Dashboard</a>
-        </p>
-    </div>
-    
-    {% if applications %}
-        <div class="applications-summary">
-            <p><strong>Total Applications:</strong> {{ applications|length }}</p>
-            
-            <!-- Status Summary -->
-            {% set status_counts = {} %}
-            {% for app in applications %}
-                {% set status = app.application.status %}
-                {% if status in status_counts %}
-                    {% set _ = status_counts.update({status: status_counts[status] + 1}) %}
-                {% else %}
-                    {% set _ = status_counts.update({status: 1}) %}
-                {% endif %}
+<h1>My Job Applications</h1>
+
+<div class="header-actions">
+    <p>
+        <a href="{{ url_for('freelancer.jobs') }}">← Back to Job Search</a> |
+        <a href="{{ url_for('freelancer.index') if url_for('freelancer.index') else '#' }}">Dashboard</a>
+    </p>
+</div>
+
+{% if applications %}
+<div class="applications-summary">
+    <p><strong>Total Applications:</strong> {{ applications|length }}</p>
+
+    <!-- Status Summary -->
+    {% set status_counts = {} %}
+    {% for app in applications %}
+    {% set status = app.application.status %}
+    {% if status in status_counts %}
+    {% set _ = status_counts.update({status: status_counts[status] + 1}) %}
+    {% else %}
+    {% set _ = status_counts.update({status: 1}) %}
+    {% endif %}
+    {% endfor %}
+
+    <div class="status-summary">
+        <h3>Status Overview:</h3>
+        <ul>
+            {% for status, count in status_counts.items() %}
+            <li>{{ status.replace('_', ' ').title() }}: {{ count }}</li>
             {% endfor %}
-            
-            <div class="status-summary">
-                <h3>Status Overview:</h3>
-                <ul>
-                    {% for status, count in status_counts.items() %}
-                        <li>{{ status.replace('_', ' ').title() }}: {{ count }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        
-        <div class="applications-list">
-            <h2>All Applications</h2>
-            
-            <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <th>Job Title</th>
-                        <th>Company</th>
-                        <th>Applied On</th>
-                        <th>Status</th>
-                        <th>Salary</th>
-                        <th>Location</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for app in applications %}
-                    <tr class="application-row status-{{ app.application.status.lower() }}">
-                        <td>
-                            <strong>{{ app.job.title }}</strong>
-                            <br>
-                            <small>{{ app.job.jobType.replace('_', ' ').title() }} • {{ app.job.experience }} years exp.</small>
-                        </td>
-                        <td>
-                            {% if app.company %}
-                                <strong>{{ app.company.companyName }}</strong>
-                                <br>
-                                <small>{{ app.company.employeeSize }} employees</small>
-                            {% else %}
-                                <em>Company info unavailable</em>
-                            {% endif %}
-                        </td>
-                        <td>{{ app.application.appliedOn[:10] if app.application.appliedOn else 'Recently' }}</td>
-                        <td>
-                            <span class="status-badge status-{{ app.application.status.lower() }}">
-                                {{ app.application.status.replace('_', ' ').title() }}
-                            </span>
-                        </td>
-                        <td>
-                            {% if app.job.salary %}
-                                ₹{{ "{:,.0f}".format(app.job.salary) }}
-                            {% else %}
-                                <em>Not disclosed</em>
-                            {% endif %}
-                        </td>
-                        <td>{{ app.job.location }}</td>
-                        <td>
-                            <a href="{{ url_for('freelancer.application_status', jobId=app.job.id) }}">View Details</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Detailed Cards View (Alternative to table for better mobile experience) -->
-        <div class="applications-cards" style="display: none;">
+        </ul>
+    </div>
+</div>
+
+<div class="applications-list">
+    <h2>All Applications</h2>
+
+    <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Applied On</th>
+                <th>Status</th>
+                <th>Salary</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for app in applications %}
-            <div class="application-card">
-                <div class="card-header">
-                    <h3>{{ app.job.title }}</h3>
+            <tr class="application-row status-{{ app.application.status.lower() }}">
+                <td>
+                    <strong>{{ app.job.title }}</strong>
+                    <br>
+                    <small>{{ app.job.jobType.replace('_', ' ').title() }} • {{ app.job.experience }} years exp.</small>
+                </td>
+                <td>
+                    {% if app.company %}
+                    <strong>{{ app.company.companyName }}</strong>
+                    <br>
+                    <small>{{ app.company.employeeSize }} employees</small>
+                    {% else %}
+                    <em>Company info unavailable</em>
+                    {% endif %}
+                </td>
+                <td>{{ app.application.appliedOn[:10] if app.application.appliedOn else 'Recently' }}</td>
+                <td>
                     <span class="status-badge status-{{ app.application.status.lower() }}">
                         {{ app.application.status.replace('_', ' ').title() }}
                     </span>
-                </div>
-                
-                <div class="card-body">
-                    <p><strong>Company:</strong> {{ app.company.companyName if app.company else 'N/A' }}</p>
-                    <p><strong>Applied On:</strong> {{ app.application.appliedOn[:10] if app.application.appliedOn else 'Recently' }}</p>
-                    <p><strong>Location:</strong> {{ app.job.location }}</p>
-                    <p><strong>Experience:</strong> {{ app.job.experience }} years</p>
-                    <p><strong>Job Type:</strong> {{ app.job.jobType.replace('_', ' ').title() }}</p>
+                </td>
+                <td>
                     {% if app.job.salary %}
-                        <p><strong>Salary:</strong> ₹{{ "{:,.0f}".format(app.job.salary) }}</p>
+                    ₹{{ "{:,.0f}".format(app.job.salary) }}
+                    {% else %}
+                    <em>Not disclosed</em>
                     {% endif %}
-                    
-                    {% if app.resume %}
-                        <p><strong>Resume:</strong> {{ app.resume.name }}</p>
-                    {% endif %}
-                    
-                    {% if app.application.coverLetter %}
-                        <p><strong>Cover Letter:</strong> 
-                            <small>{{ app.application.coverLetter[:100] + '...' if app.application.coverLetter|length > 100 else app.application.coverLetter }}</small>
-                        </p>
-                    {% endif %}
-                </div>
-                
-                <div class="card-footer">
-                    <a href="{{ url_for('freelancer.application_status', jobId=app.job.id) }}">View Full Details</a>
-                    
-                    {% if app.application.updatedAt and app.application.updatedAt != app.application.appliedOn %}
-                        <small>Last updated: {{ app.application.updatedAt[:10] }}</small>
-                    {% endif %}
-                </div>
-            </div>
+                </td>
+                <td>{{ app.job.location }}</td>
+                <td>
+                    <a href="{{ url_for('freelancer.application_status', jobId=app.job.id) }}">View Details</a>
+                </td>
+            </tr>
             {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Detailed Cards View (Alternative to table for better mobile experience) -->
+<div class="applications-cards" style="display: none;">
+    {% for app in applications %}
+    <div class="application-card">
+        <div class="card-header">
+            <h3>{{ app.job.title }}</h3>
+            <span class="status-badge status-{{ app.application.status.lower() }}">
+                {{ app.application.status.replace('_', ' ').title() }}
+            </span>
         </div>
-        
-        <!-- Filter Options -->
-        <div class="filter-section">
-            <h3>Filter Applications</h3>
-            <div class="filters">
-                <button onclick="filterByStatus('all')" class="filter-btn active" id="filter-all">All ({{ applications|length }})</button>
-                {% for status, count in status_counts.items() %}
-                    <button onclick="filterByStatus('{{ status.lower() }}')" class="filter-btn" id="filter-{{ status.lower() }}">
-                        {{ status.replace('_', ' ').title() }} ({{ count }})
-                    </button>
-                {% endfor %}
-            </div>
+
+        <div class="card-body">
+            <p><strong>Company:</strong> {{ app.company.companyName if app.company else 'N/A' }}</p>
+            <p><strong>Applied On:</strong> {{ app.application.appliedOn[:10] if app.application.appliedOn else
+                'Recently' }}</p>
+            <p><strong>Location:</strong> {{ app.job.location }}</p>
+            <p><strong>Experience:</strong> {{ app.job.experience }} years</p>
+            <p><strong>Job Type:</strong> {{ app.job.jobType.replace('_', ' ').title() }}</p>
+            {% if app.job.salary %}
+            <p><strong>Salary:</strong> ₹{{ "{:,.0f}".format(app.job.salary) }}</p>
+            {% endif %}
+
+            {% if app.resume %}
+            <p><strong>Resume:</strong> {{ app.resume.name }}</p>
+            {% endif %}
+
+            {% if app.application.coverLetter %}
+            <p><strong>Cover Letter:</strong>
+                <small>{{ app.application.coverLetter[:100] + '...' if app.application.coverLetter|length > 100 else
+                    app.application.coverLetter }}</small>
+            </p>
+            {% endif %}
         </div>
-        
-    {% else %}
-        <div class="no-applications">
-            <h2>No Applications Yet</h2>
-            <p>You haven't applied to any jobs yet.</p>
-            <p><a href="{{ url_for('freelancer.jobs') }}">Browse Available Jobs →</a></p>
+
+        <div class="card-footer">
+            <a href="{{ url_for('freelancer.application_status', jobId=app.job.id) }}">View Full Details</a>
+
+            {% if app.application.updatedAt and app.application.updatedAt != app.application.appliedOn %}
+            <small>Last updated: {{ app.application.updatedAt[:10] }}</small>
+            {% endif %}
         </div>
-    {% endif %}
-    
-    <style>
-        /* Basic styling for better presentation */
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Filter Options -->
+<div class="filter-section">
+    <h3>Filter Applications</h3>
+    <div class="filters">
+        <button onclick="filterByStatus('all')" class="filter-btn active" id="filter-all">All ({{ applications|length
+            }})</button>
+        {% for status, count in status_counts.items() %}
+        <button onclick="filterByStatus('{{ status.lower() }}')" class="filter-btn" id="filter-{{ status.lower() }}">
+            {{ status.replace('_', ' ').title() }} ({{ count }})
+        </button>
+        {% endfor %}
+    </div>
+</div>
+
+{% else %}
+<div class="no-applications">
+    <h2>No Applications Yet</h2>
+    <p>You haven't applied to any jobs yet.</p>
+    <p><a href="{{ url_for('freelancer.jobs') }}">Browse Available Jobs →</a></p>
+</div>
+{% endif %}
+
+<style>
+    /* Basic styling for better presentation */
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    .status-pending {
+        background-color: #fafafa;
+        color: #332602;
+    }
+
+    .status-under_review {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .status-shortlisted {
+        background-color: #cce7ff;
+        color: #004085;
+    }
+
+    .status-interviewed {
+        background-color: #e2e3e5;
+        color: #383d41;
+    }
+
+    .status-accepted {
+        background-color: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .status-withdrawn {
+        background-color: #f5f5f5;
+        color: #6c757d;
+    }
+
+    .application-card {
+        border: 1px solid #ddd;
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .card-footer {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-btn {
+        margin: 5px;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .filter-btn.active {
+        background: #007bff;
+        color: white;
+    }
+
+    .applications-summary {
+        background: #f8f9fa;
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        min-width: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    @media (max-width: 768px) {
+        table {
+            display: none;
         }
-        
-        .status-pending { background-color: #fff3cd; color: #856404; }
-        .status-under_review { background-color: #d4edda; color: #155724; }
-        .status-shortlisted { background-color: #cce7ff; color: #004085; }
-        .status-interviewed { background-color: #e2e3e5; color: #383d41; }
-        .status-accepted { background-color: #d1ecf1; color: #0c5460; }
-        .status-rejected { background-color: #f8d7da; color: #721c24; }
-        .status-withdrawn { background-color: #f5f5f5; color: #6c757d; }
-        
-        .application-card {
-            border: 1px solid #ddd;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
+
+        .applications-cards {
+            display: block !important;
         }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .card-footer {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .filter-btn {
-            margin: 5px;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            background: white;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        
-        .filter-btn.active {
-            background: #007bff;
-            color: white;
-        }
-        
-        .applications-summary {
-            background: #f8f9fa;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        
-        @media (max-width: 768px) {
-            table { display: none; }
-            .applications-cards { display: block !important; }
-        }
-    </style>
-    
-    <script>
-        function filterByStatus(status) {
-            const rows = document.querySelectorAll('.application-row');
-            const cards = document.querySelectorAll('.application-card');
-            const buttons = document.querySelectorAll('.filter-btn');
-            
-            // Remove active class from all buttons
-            buttons.forEach(btn => btn.classList.remove('active'));
-            
-            // Add active class to clicked button
-            document.getElementById('filter-' + status).classList.add('active');
-            
-            // Filter table rows
-            rows.forEach(row => {
-                if (status === 'all' || row.classList.contains('status-' + status)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-            
-            // Filter cards
-            cards.forEach(card => {
-                const statusBadge = card.querySelector('.status-badge');
-                if (status === 'all' || (statusBadge && statusBadge.classList.contains('status-' + status))) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-        
-        // Toggle between table and card view
-        function toggleView() {
-            const table = document.querySelector('.applications-list');
-            const cards = document.querySelector('.applications-cards');
-            
-            if (table.style.display === 'none') {
-                table.style.display = 'block';
-                cards.style.display = 'none';
+    }
+
+    tr {
+        border: 2px solid #e0e0e0;
+        background: #fff;
+        border-radius: 20px;
+    }
+
+    .applications-list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    td {
+        padding: 5px 15px;
+        border: none;
+    }
+
+    tbody {
+        gap: 10px;
+    }
+
+    tr.application-row {}
+
+    table {
+        border-collapse: separate !important;
+        border-spacing: 0 10px;
+        border: none !important;
+        padding: 0 10px;
+    }
+
+    thead {
+        border: none;
+        outline: none;
+    }
+
+    th {
+        border: none;
+        text-align: center;
+    }
+
+    td:first-child {
+        border: 1px solid #00000000;
+        border-radius: 10px 0 0 10px;
+    }
+
+    td:last-child {
+        border: 1px solid #fff0;
+        border-radius: 0px 10px 10px 0px;
+    }
+</style>
+
+<script>
+    function filterByStatus(status) {
+        const rows = document.querySelectorAll('.application-row');
+        const cards = document.querySelectorAll('.application-card');
+        const buttons = document.querySelectorAll('.filter-btn');
+
+        // Remove active class from all buttons
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // Add active class to clicked button
+        document.getElementById('filter-' + status).classList.add('active');
+
+        // Filter table rows
+        rows.forEach(row => {
+            if (status === 'all' || row.classList.contains('status-' + status)) {
+                row.style.display = '';
             } else {
-                table.style.display = 'none';
-                cards.style.display = 'block';
+                row.style.display = 'none';
             }
+        });
+
+        // Filter cards
+        cards.forEach(card => {
+            const statusBadge = card.querySelector('.status-badge');
+            if (status === 'all' || (statusBadge && statusBadge.classList.contains('status-' + status))) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Toggle between table and card view
+    function toggleView() {
+        const table = document.querySelector('.applications-list');
+        const cards = document.querySelector('.applications-cards');
+
+        if (table.style.display === 'none') {
+            table.style.display = 'block';
+            cards.style.display = 'none';
+        } else {
+            table.style.display = 'none';
+            cards.style.display = 'block';
         }
-    </script>
+    }
+</script>
 </body>
+
 </html>
 {% endblock %}

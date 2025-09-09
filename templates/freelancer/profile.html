@@ -3,7 +3,7 @@
 {% block title %}Freelancer Login{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{{ url_for('static', filename='freelancer_profile.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='recruiter_main.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -14,10 +14,10 @@
     <section id="profile">
         <h2>Profile Details</h2>
         
-        <div class="nameField">
-            <input type="text" name="firstName" id="firstName" placeholder="First Name">
-            <input type="text" name="middleName" id="middleName" placeholder="Middle Name">
-            <input type="text" name="lastName" id="lastName" placeholder="Last Name">
+        <div class="nameField inputField" style="flex-direction:row; width:100%; gap: 10px;">
+            <input type="text" style="width: unset; flex-grow: 0.6;" name="firstName" id="firstName" placeholder="First Name">
+            <input type="text" style="width: unset; flex-grow: 0.3;" name="middleName" id="middleName" placeholder="Middle Name">
+            <input type="text" style="width: unset; flex-grow: 0.1;" name="lastName" id="lastName" placeholder="Last Name">
         </div>
 
         <div class="inputField">
