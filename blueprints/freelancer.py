@@ -107,12 +107,16 @@ def jobs():
     min_experience = request.args.get("min_experience", None)
     max_experience = request.args.get("max_experience", None)
     job_type = request.args.get("job_type", None)
+    job_type = job_type if job_type != "" else None
     company_name = request.args.get("company_name", None)
     min_salary = request.args.get("min_salary", None)
     max_salary = request.args.get("max_salary", None)
     skills = request.args.get("skills", None)
+    skills = skills if skills != "" else None
     location = request.args.get("location", None)
-    applied = bool(request.args.get("applied", 0))
+    location = location if location != "" else None
+    applied = request.args.get("applied", None)
+    applied = applied == "1"
     
     # Convert string parameters to appropriate types
     min_experience = int(min_experience) if min_experience and min_experience.isdigit() else None
@@ -120,17 +124,17 @@ def jobs():
     min_salary = float(min_salary) if min_salary and min_salary.replace('.', '').isdigit() else None
     max_salary = float(max_salary) if max_salary and max_salary.replace('.', '').isdigit() else None
     
-    print(
-        search,
-        page,
-        min_experience,
-        max_experience,
-        job_type,
-        company_name,
-        min_salary,
-        max_salary,
-        skills,
-        location
+    print(f"""
+        {search=},
+        {page=},
+        {min_experience=},
+        {max_experience=},
+        {job_type=},
+        {company_name=},
+        {min_salary=},
+        {max_salary=},
+        {skills=},
+        {location=}"""
     )
     
     
@@ -150,12 +154,12 @@ def jobs():
     
     applicationModels = models.Applications.getAll(freelancerId = freelancer.id)
     applicationIds = [ i.jobPostId for i in applicationModels ]
-    print(applicationIds)
     
-    print(jobs)
+    print("applied", applied, "jobs", jobs, "applicationIds", applicationIds)
     njobs = []
     if applied:
         for job in jobs:
+            print("Applid is true")
             # print(job['id'], applicationIds)
             if job['id'] in applicationIds:
                 njobs.append(job)
@@ -164,7 +168,7 @@ def jobs():
             # print(job['id'], applicationIds)
             if job['id'] not in applicationIds:
                 njobs.append(job)
-    # print(njobs)
+    print(njobs)
     
     return render_template("/freelancer/jobs.html", freelancer=freelancer, jobs=njobs)
 
